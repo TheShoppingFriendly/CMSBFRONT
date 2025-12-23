@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
 const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,6 +16,14 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
     setActiveTab(tab);
     if (window.innerWidth < 768) setSidebarOpen(false);
   };
+
+const navigate = useNavigate();
+const handleLogout = () => {
+  logout();
+  navigate("/");
+};
+
+
 
   const menuItems = [
     { id: "home", label: "Home", icon: "🏠", badge: null },
@@ -273,7 +283,7 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
             )}
             
             <button 
-              onClick={logout}
+              onClick={handleLogout}
               style={{
                 width: "100%",
                 padding: "12px 16px",
