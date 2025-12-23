@@ -80,7 +80,7 @@ const AdminProfile = () => {
           color: "#7c3aed",
           borderRadius: "20px",
           fontSize: "14px",
-          fontWeight: "600"
+          fontWeight: "500"
         }}>
           {formData.role}
         </div>
