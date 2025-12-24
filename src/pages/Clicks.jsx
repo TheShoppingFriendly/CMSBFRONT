@@ -336,9 +336,9 @@ const Clicks = () => {
                   onBlur={(e) => e.target.style.borderColor = "#e0e0e0"}
                 >
                   <option value="">All Types</option>
-                  <option value="affiliate">Affiliate</option>
-                  <option value="direct">Direct</option>
-                  <option value="other">Other</option>
+                  <option value="affiliate">Postback</option>
+                  <option value="pixel">Pixel</option>
+                  {/* <option value="other">Other</option> */}
                 </select>
               </div>
 
