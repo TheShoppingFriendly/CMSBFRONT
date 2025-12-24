@@ -45,11 +45,11 @@ const Conversions = ({ setCount }) => {
       );
     }
 
-    if (filters.click_id) {
-      filtered = filtered.filter(conv => 
-        conv.click_id?.toLowerCase().includes(filters.click_id.toLowerCase())
-      );
-    }
+    // if (filters.click_id) {
+    //   filtered = filtered.filter(conv => 
+    //     conv.click_id?.toLowerCase().includes(filters.click_id.toLowerCase())
+    //   );
+    // }
 
     if (filters.status) {
       filtered = filtered.filter(conv => 
@@ -271,7 +271,7 @@ const Conversions = ({ setCount }) => {
               </div>
 
               {/* Click_ID Filter */}
-              <div>
+              {/* <div>
                 <label style={{
                   display: "block",
                   marginBottom: "8px",
@@ -299,7 +299,7 @@ const Conversions = ({ setCount }) => {
                   onFocus={(e) => e.target.style.borderColor = "#27ae60"}
                   onBlur={(e) => e.target.style.borderColor = "#e0e0e0"}
                 />
-              </div>
+              </div> */}
 
               {/* Status Filter */}
               <div>
@@ -504,7 +504,7 @@ const Conversions = ({ setCount }) => {
               <tr style={{ backgroundColor: "#f8f9fa" }}>
                 <th style={tableHeaderStyle}>#</th>
                 <th style={tableHeaderStyle}>Click ID</th>
-                <th style={tableHeaderStyle}>Click_ID</th>
+                {/* <th style={tableHeaderStyle}>Click_ID</th> */}
                 <th style={tableHeaderStyle}>Payout</th>
                 <th style={tableHeaderStyle}>Status</th>
                 <th style={tableHeaderStyle}>Postback Payload</th>
@@ -536,7 +536,7 @@ const Conversions = ({ setCount }) => {
                       {conversion.clickid || "N/A"}
                     </code>
                   </td>
-                  <td style={tableCellStyle}>
+                  {/* <td style={tableCellStyle}>
                     <code style={{ 
                       fontSize: "12px", 
                       backgroundColor: "#e3f2fd",
@@ -547,7 +547,7 @@ const Conversions = ({ setCount }) => {
                     }}>
                       {conversion.click_id || "N/A"}
                     </code>
-                  </td>
+                  </td> */}
                   <td style={tableCellStyle}>
                     <span style={{
                       fontWeight: "700",
