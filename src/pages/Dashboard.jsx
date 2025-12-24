@@ -3,7 +3,7 @@ import Sidebar from "../components/layout/Sidebar";
 import Clicks from "./Clicks";
 import Conversions from "./Conversions";
 import Campaigns from "./Campaigns";
-// import Cashbacks from "./Cashbacks";
+import Cashbacks from "./Cashbacks";
 import UserStaff from "./UserStaff";
 import AdminProfile from "./AdminProfile";
 import api from "../api/axios";
