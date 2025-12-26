@@ -27,21 +27,35 @@ const handleLogout = () => {
 
   const menuItems = [
     { id: "home", label: "Home", icon: "🏠", badge: null },
-    { id: "clicks", label: "Clicks", icon: "👆", badge: clicksCount },
-    { id: "conversions", label: "Conversions", icon: "💰", badge: conversionsCount },
+    { id: "clicks", label: "Clicks",
+      //  icon: "👆",
+        badge: clicksCount },
+    { id: "conversions", label: "Conversions",
+      //  icon: "💰",
+       badge: conversionsCount },
     { 
       id: "campaigns", 
       label: "Campaigns", 
-      icon: "📢", 
+      // icon: "📢", 
       badge: null,
       submenu: [
-        { id: "add-campaign", label: "Add Campaign", icon: "➕" },
-        { id: "all-campaigns", label: "All Campaigns", icon: "📋" }
+        { id: "add-campaign", label: "Add Campaign",
+          //  icon: "➕" 
+          },
+        { id: "all-campaigns", label: "All Campaigns", 
+          // icon: "📋" 
+        }
       ]
     },
-    { id: "cashbacks", label: "Cashbacks", icon: "💸", badge: "Soon" },
-    { id: "users-staff", label: "Users/Staff", icon: "👥", badge: null },
-    { id: "admin-profile", label: "Admin Profile", icon: "👤", badge: null },
+    { id: "cashbacks", label: "Cashbacks", 
+      // icon: "💸", 
+      badge: "Soon" },
+    { id: "users-staff", label: "Users/Staff", 
+      // icon: "👥", 
+      badge: null },
+    { id: "admin-profile", label: "Admin Profile", 
+      // icon: "👤",
+       badge: null },
   ];
 
   return (
@@ -117,7 +131,7 @@ const handleLogout = () => {
               alignItems: "center",
               gap: "10px"
             }}>
-              <span>🎯</span>
+              {/* <span>🎯</span> */}
               Admin Panel
             </h2>
             <p style={{
