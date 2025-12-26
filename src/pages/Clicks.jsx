@@ -174,7 +174,7 @@ const Clicks = () => {
             e.currentTarget.style.boxShadow = "none";
           }}
         >
-          <span style={{ fontSize: "18px" }}>🔍</span>
+          {/* <span style={{ fontSize: "18px" }}>🔍</span> */}
           {filterOpen ? "Close Filters" : "Open Filters"}
           {activeFiltersCount > 0 && (
             <span style={{

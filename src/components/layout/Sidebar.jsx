@@ -26,7 +26,9 @@ const handleLogout = () => {
 
 
   const menuItems = [
-    { id: "home", label: "Home", icon: "🏠", badge: null },
+    { id: "home", label: "Home", 
+      // icon: "🏠",
+       badge: null },
     { id: "clicks", label: "Clicks",
       //  icon: "👆",
         badge: clicksCount },
