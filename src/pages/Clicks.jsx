@@ -507,7 +507,7 @@ const Clicks = () => {
           }}>
             <thead>
               <tr style={{ backgroundColor: "#f8f9fa" }}>
-                <th style={tableHeaderStyle}>#</th>
+                <th style={tableHeaderStyle}>Serial No.</th>
                 <th style={tableHeaderStyle}>Click ID</th>
                 <th style={tableHeaderStyle}>Campaign ID</th>
                 <th style={tableHeaderStyle}>Coupon URL</th>

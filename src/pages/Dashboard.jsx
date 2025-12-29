@@ -108,7 +108,6 @@ const Dashboard = () => {
               justifyContent: "center",
               fontSize: "28px"
             }}>
-              👆
             </div>
           </div>
           <p style={{
@@ -168,7 +167,6 @@ const Dashboard = () => {
               justifyContent: "center",
               fontSize: "28px"
             }}>
-              💰
             </div>
           </div>
           <p style={{
@@ -228,7 +226,7 @@ const Dashboard = () => {
               justifyContent: "center",
               fontSize: "28px"
             }}>
-              📈
+
             </div>
           </div>
           <p style={{
@@ -365,7 +363,7 @@ const Dashboard = () => {
             alignItems: "center",
             gap: "8px"
           }}>
-            <span>👆</span> Recent Clicks
+            Recent Clicks
           </h3>
           
           {loading ? (
@@ -433,7 +431,7 @@ const Dashboard = () => {
             alignItems: "center",
             gap: "8px"
           }}>
-            <span>💰</span> Recent Conversions
+          Recent Conversions
           </h3>
           
           {loading ? (

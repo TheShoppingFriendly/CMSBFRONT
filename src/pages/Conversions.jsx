@@ -504,8 +504,8 @@ const Conversions = ({ setCount }) => {
               <tr style={{ backgroundColor: "#f8f9fa" }}>
                 <th style={tableHeaderStyle}>#</th>
                 <th style={tableHeaderStyle}>Click ID</th>
-                {/* <th style={tableHeaderStyle}>Click_ID</th> */}
-                <th style={tableHeaderStyle}>Payout</th>
+                <th style={tableHeaderStyle}>Commission</th>
+                <th style={tableHeaderStyle}>Total Sale</th>
                 <th style={tableHeaderStyle}>Status</th>
                 <th style={tableHeaderStyle}>Postback Payload</th>
                 <th style={tableHeaderStyle}>Order ID</th>
@@ -536,7 +536,7 @@ const Conversions = ({ setCount }) => {
                       {conversion.clickid || "N/A"}
                     </code>
                   </td>
-                  {/* <td style={tableCellStyle}>
+                  <td style={tableCellStyle}>
                     <code style={{ 
                       fontSize: "12px", 
                       backgroundColor: "#e3f2fd",
@@ -545,9 +545,9 @@ const Conversions = ({ setCount }) => {
                       fontWeight: "500",
                       color: "#1976d2"
                     }}>
-                      {conversion.click_id || "N/A"}
+                      {conversion.commission || "N/A"}
                     </code>
-                  </td> */}
+                  </td>
                   <td style={tableCellStyle}>
                     <span style={{
                       fontWeight: "700",
