@@ -109,7 +109,7 @@ const StoreCampaign = () => {
         >
           <thead>
             <tr style={{ background: "#f3f4f6" }}>
-              <th style={th}>Order ID</th>
+              <th style={th}>Click ID</th>
               <th style={th}>Amount</th>
               <th style={th}>Commission</th>
               <th style={th}>Status</th>
@@ -119,8 +119,8 @@ const StoreCampaign = () => {
           <tbody>
             {conversions.map((c) => (
               <tr key={c.id}>
-                <td style={td}>{c.order_id}</td>
-                <td style={td}>₹{c.amount}</td>
+                <td style={td}>{c.clickid}</td>
+                <td style={td}>₹{c.payout}</td>
                 <td style={td}>₹{c.commission}</td>
                 <td style={td}>{c.status}</td>
                 <td style={td}>
