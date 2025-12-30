@@ -19,7 +19,7 @@ const Campaigns = ({ activeTab }) => {
           return;
         }
 
-        const res = await fetch(`${API_BASE}/admin/stores`, {
+        const res = await fetch(`${API_BASE}/stores`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
