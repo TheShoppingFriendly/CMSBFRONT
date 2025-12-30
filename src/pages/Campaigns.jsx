@@ -1,51 +1,155 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
-const StoreList = () => {
+const Campaigns = ({ activeTab }) => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    const getStores = async () => {
+    // Only fetch if the tab is "all-campaigns"
+    if (activeTab !== "all-campaigns") return;
+
+    const fetchStores = async () => {
       try {
-        const token = localStorage.getItem('adminToken');
+        setLoading(true);
+        setError(""); // Reset error state on new fetch
+        
+        // Ensure you are using the correct key: "admin_token"
+        const token = localStorage.getItem("admin_token");
+
+        if (!token) {
+          setError("Unauthorized. Please login again.");
+          setLoading(false);
+          return;
+        }
+
         const res = await fetch(`${API_BASE}/stores`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
         });
+
+        if (!res.ok) {
+          if (res.status === 401) throw new Error("Session expired. Please login again.");
+          throw new Error("Failed to load stores from server.");
+        }
 
         const data = await res.json();
         
-        // DEBUG: Check your browser console to see what 'data' is
-        console.log("Raw data from server:", data);
-
-        // If your backend sends 'result.rows', data IS the array.
+        // FIX: Your backend sends result.rows directly (an array)
+        // We check if data is an array, otherwise we set an empty list
+        console.log("Fetched Stores:", data); 
         setStores(Array.isArray(data) ? data : []);
+
       } catch (err) {
-        console.error("Fetch failed:", err);
+        console.error("Fetch Error:", err.message);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    getStores();
-  }, [API_BASE]);
 
-  if (loading) return <div style={{padding: '20px'}}>Loading...</div>;
+    fetchStores();
+  }, [activeTab, API_BASE]);
+
+  // UI Helpers
+  const getTitle = () => {
+    if (activeTab === "add-campaign") return "Add New Campaign";
+    if (activeTab === "all-campaigns") return "All Stores";
+    return "Campaign Management";
+  };
+
+  const getDescription = () => {
+    if (activeTab === "add-campaign") return "Create campaigns and assign them to stores.";
+    if (activeTab === "all-campaigns") return "All synced stores available for campaign tracking.";
+    return "Campaign tools are under development.";
+  };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h2>Stores ({stores.length})</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
-        {stores.map(store => (
-          <div key={store.id} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px', background: '#fff' }}>
-            <strong>{store.name}</strong>
-            <p style={{ fontSize: '12px', color: '#666' }}>{store.slug}</p>
-          </div>
-        ))}
-      </div>
-      {stores.length === 0 && <p>No stores found in the database.</p>}
+    <div style={{
+      backgroundColor: "#fff",
+      borderRadius: "12px",
+      padding: "40px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+      minHeight: "400px"
+    }}>
+      <h2 style={{ fontSize: "28px", fontWeight: 700, margin: "0 0 8px 0" }}>
+        {getTitle()}
+      </h2>
+
+      <p style={{ color: "#6b7280", marginBottom: "24px" }}>
+        {getDescription()}
+      </p>
+
+      {/* --- State Handling UI --- */}
+      {loading && <p style={{ color: "#7c3aed" }}>Loading stores...</p>}
+      
+      {error && (
+        <div style={{ padding: "12px", backgroundColor: "#fef2f2", color: "#b91c1c", borderRadius: "8px", marginBottom: "16px" }}>
+          {error}
+        </div>
+      )}
+
+      {/* --- Store Grid --- */}
+      {activeTab === "all-campaigns" && !loading && !error && (
+        <>
+          {stores.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#6b7280", marginTop: "40px" }}>
+              No stores found in the database.
+            </p>
+          ) : (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: "20px"
+            }}>
+              {stores.map((store) => (
+                <div
+                  key={store.id}
+                  style={{
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "12px",
+                    padding: "20px",
+                    backgroundColor: "#fff",
+                    transition: "transform 0.2s",
+                    cursor: "default"
+                  }}
+                >
+                  <h4 style={{ margin: 0, fontSize: "18px", fontWeight: 600, color: "#111827" }}>
+                    {store.name}
+                  </h4>
+
+                  <p style={{ fontSize: "14px", color: "#6b7280", marginTop: "8px", marginBottom: "16px" }}>
+                    Slug: <code style={{ backgroundColor: "#f3f4f6", padding: "2px 4px", borderRadius: "4px" }}>{store.slug}</code>
+                  </p>
+
+                  <button
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "none",
+                      backgroundColor: "#7c3aed",
+                      color: "#fff",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontSize: "14px"
+                    }}
+                  >
+                    Create Campaign
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
 
-export default StoreList;
+export default Campaigns;
