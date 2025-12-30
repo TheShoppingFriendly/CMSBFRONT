@@ -1,150 +1,134 @@
+import { useEffect, useState } from "react";
+
 const Campaigns = ({ activeTab }) => {
+  const [stores, setStores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+  useEffect(() => {
+    if (activeTab !== "all-campaigns") return;
+
+    const fetchStores = async () => {
+      try {
+        const token = localStorage.getItem("admin_token");
+
+        if (!token) {
+          setError("Unauthorized. Please login again.");
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/api/admin/stores`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to load stores");
+        }
+
+        const data = await res.json();
+        setStores(data.stores || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStores();
+  }, [activeTab]);
+
+  // ---------------- UI helpers ----------------
+
   const getTitle = () => {
     if (activeTab === "add-campaign") return "Add New Campaign";
-    if (activeTab === "all-campaigns") return "All Campaigns";
+    if (activeTab === "all-campaigns") return "All Stores";
     return "Campaign Management";
   };
 
   const getDescription = () => {
     if (activeTab === "add-campaign") {
-      return "Create and configure new marketing campaigns with advanced targeting options.";
+      return "Create campaigns and assign them to stores.";
     }
     if (activeTab === "all-campaigns") {
-      return "View, manage, and analyze all your active and past campaigns in one place.";
+      return "All synced stores available for campaign tracking.";
     }
-    return "Powerful campaign management tools are on the way!";
+    return "Campaign tools are under development.";
   };
+
+  // ---------------- UI ----------------
 
   return (
     <div style={{
-      backgroundColor: "white",
+      backgroundColor: "#fff",
       borderRadius: "12px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-      padding: "60px 40px",
-      textAlign: "center",
-      minHeight: "500px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center"
+      padding: "40px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
     }}>
-      <div style={{
-        width: "120px",
-        height: "120px",
-        backgroundColor: "#ede9fe",
-        borderRadius: "50%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "60px",
-        marginBottom: "32px",
-        animation: "bounce 2s infinite"
-      }}>
-        📢
-      </div>
-      
-      <h2 style={{
-        margin: "0 0 16px 0",
-        fontSize: "32px",
-        fontWeight: "700",
-        color: "#1f2937"
-      }}>
+      <h2 style={{ fontSize: "28px", fontWeight: 700 }}>
         {getTitle()}
       </h2>
-      
-      <p style={{
-        margin: "0 0 24px 0",
-        fontSize: "16px",
-        color: "#6b7280",
-        maxWidth: "600px",
-        lineHeight: "1.6"
-      }}>
+
+      <p style={{ color: "#6b7280", marginBottom: "24px" }}>
         {getDescription()}
       </p>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "16px",
-        width: "100%",
-        maxWidth: "700px",
-        marginTop: "32px"
-      }}>
+      {loading && <p>Loading stores…</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {activeTab === "all-campaigns" && !loading && (
         <div style={{
-          padding: "20px",
-          backgroundColor: "#faf5ff",
-          border: "2px solid #e9d5ff",
-          borderRadius: "10px",
-          textAlign: "center"
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gap: "16px"
         }}>
-          <div style={{ fontSize: "32px", marginBottom: "8px" }}>🎯</div>
-          <h4 style={{ margin: "0 0 8px 0", fontSize: "16px", color: "#1f2937", fontWeight: "600" }}>
-            Smart Targeting
-          </h4>
-          <p style={{ margin: 0, fontSize: "13px", color: "#6b7280" }}>
-            Advanced audience segmentation
-          </p>
+          {stores.map((store) => (
+            <div
+              key={store.id}
+              style={{
+                border: "1px solid #e5e7eb",
+                borderRadius: "10px",
+                padding: "16px",
+                backgroundColor: "#fafafa"
+              }}
+            >
+              <h4 style={{
+                margin: 0,
+                fontSize: "16px",
+                fontWeight: 600
+              }}>
+                {store.name}
+              </h4>
+
+              <p style={{
+                fontSize: "13px",
+                color: "#6b7280",
+                marginTop: "6px"
+              }}>
+                Slug: {store.slug}
+              </p>
+
+              <button
+                style={{
+                  marginTop: "12px",
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: "#7c3aed",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontSize: "13px"
+                }}
+              >
+                Create Campaign
+              </button>
+            </div>
+          ))}
         </div>
-
-        <div style={{
-          padding: "20px",
-          backgroundColor: "#faf5ff",
-          border: "2px solid #e9d5ff",
-          borderRadius: "10px",
-          textAlign: "center"
-        }}>
-          <div style={{ fontSize: "32px", marginBottom: "8px" }}>📊</div>
-          <h4 style={{ margin: "0 0 8px 0", fontSize: "16px", color: "#1f2937", fontWeight: "600" }}>
-            Real-time Analytics
-          </h4>
-          <p style={{ margin: 0, fontSize: "13px", color: "#6b7280" }}>
-            Track performance metrics
-          </p>
-        </div>
-
-        <div style={{
-          padding: "20px",
-          backgroundColor: "#faf5ff",
-          border: "2px solid #e9d5ff",
-          borderRadius: "10px",
-          textAlign: "center"
-        }}>
-          <div style={{ fontSize: "32px", marginBottom: "8px" }}>⚡</div>
-          <h4 style={{ margin: "0 0 8px 0", fontSize: "16px", color: "#1f2937", fontWeight: "600" }}>
-            Quick Setup
-          </h4>
-          <p style={{ margin: 0, fontSize: "13px", color: "#6b7280" }}>
-            Launch campaigns in minutes
-          </p>
-        </div>
-      </div>
-
-      <div style={{
-        marginTop: "48px",
-        padding: "16px 32px",
-        backgroundColor: "#fef3c7",
-        color: "#92400e",
-        borderRadius: "10px",
-        fontSize: "15px",
-        fontWeight: "600",
-        display: "flex",
-        alignItems: "center",
-        gap: "12px"
-      }}>
-        <span style={{ fontSize: "24px" }}>🚧</span>
-        Under Development
-      </div>
-
-      <style>{`
-        @keyframes bounce {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-      `}</style>
+      )}
     </div>
   );
 };
