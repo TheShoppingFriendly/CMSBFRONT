@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const Campaigns = ({ activeTab }) => {
   const [stores, setStores] = useState([]);
@@ -6,6 +8,9 @@ const Campaigns = ({ activeTab }) => {
   const [error, setError] = useState("");
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Only fetch if the tab is "all-campaigns"
@@ -128,20 +133,22 @@ const Campaigns = ({ activeTab }) => {
                   </p>
 
                   <button
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "8px",
-                      border: "none",
-                      backgroundColor: "#7c3aed",
-                      color: "#fff",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      fontSize: "14px"
-                    }}
-                  >
-                    Create Campaign
-                  </button>
+  onClick={() => navigate(`/campaigns/${store.slug}`)}
+  style={{
+    width: "100%",
+    padding: "10px",
+    borderRadius: "8px",
+    border: "none",
+    backgroundColor: "#7c3aed",
+    color: "#fff",
+    fontWeight: 600,
+    cursor: "pointer",
+    fontSize: "14px"
+  }}
+>
+  View Campaign
+</button>
+
                 </div>
               ))}
             </div>

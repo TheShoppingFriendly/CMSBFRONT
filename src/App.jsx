@@ -3,6 +3,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Campaigns from "./pages/Campaigns";
+import StoreCampaign from "./pages/StoreCampaign";
 
 function App() {
   return (
@@ -19,6 +21,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route path="/campaigns" element={<Campaigns />} />
+<Route path="/campaigns/:storeSlug" element={<StoreCampaign />} />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>
