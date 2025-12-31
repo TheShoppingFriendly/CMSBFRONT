@@ -7,6 +7,9 @@ import Cashbacks from "./Cashbacks";
 import UserStaff from "./UserStaff";
 import AdminProfile from "./AdminProfile";
 import api from "../api/axios";
+import UserDetails from "./UserDetails";
+import Users from "./Users";
+
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("home");
@@ -522,7 +525,7 @@ const Dashboard = () => {
       case "admin-profile":
         return <AdminProfile />;
         case "users-list":
-      return <UsersList setActiveTab={setActiveTab} />; // Pass setActiveTab to allow clicking a user
+      return <Users setActiveTab={setActiveTab} />; // Pass setActiveTab to allow clicking a user
     case "user-details":
       return <UserDetails />;
       default:

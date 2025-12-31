@@ -5,6 +5,8 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Campaigns from "./pages/Campaigns";
 import StoreCampaign from "./pages/StoreCampaign";
+import Users from "./pages/Users";
+import UserDetails from "./pages/UserDetails";
 
 function App() {
   return (
