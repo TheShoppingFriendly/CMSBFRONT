@@ -521,6 +521,10 @@ const Dashboard = () => {
         return <UserStaff />;
       case "admin-profile":
         return <AdminProfile />;
+        case "users-list":
+      return <UsersList setActiveTab={setActiveTab} />; // Pass setActiveTab to allow clicking a user
+    case "user-details":
+      return <UserDetails />;
       default:
         return renderHomePage();
     }

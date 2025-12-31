@@ -25,6 +25,9 @@ function App() {
           <Route path="/campaigns" element={<Campaigns />} />
 <Route path="/campaigns/:storeSlug" element={<StoreCampaign />} />
 
+<Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+  <Route path="/users/:wp_user_id" element={<ProtectedRoute><UserDetails /></ProtectedRoute>} />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>
