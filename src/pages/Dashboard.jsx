@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [clicks, setClicks] = useState([]);
   const [conversions, setConversions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   // Fetch data for home page
   useEffect(() => {
@@ -525,9 +526,10 @@ const Dashboard = () => {
       case "admin-profile":
         return <AdminProfile />;
         case "users-list":
-      return <Users setActiveTab={setActiveTab} />; // Pass setActiveTab to allow clicking a user
+      return <Users setActiveTab={setActiveTab} setSelectedUserId={setSelectedUserId} />; // Pass setActiveTab to allow clicking a user
     case "user-details":
-      return <UserDetails />;
+      return <UserDetails wp_user_id={selectedUserId} 
+      setActiveTab={setActiveTab} />;
       default:
         return renderHomePage();
     }

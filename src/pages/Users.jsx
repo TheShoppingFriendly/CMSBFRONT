@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-const Users = () => {
+// Pass the state functions as props from the Dashboard
+const Users = ({ setActiveTab, setSelectedUserId }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
@@ -26,32 +25,40 @@ const Users = () => {
     }
   };
 
-  if (loading) return <div>Loading Users...</div>;
+  if (loading) return <div style={{ padding: "20px" }}>Loading Users...</div>;
 
   return (
     <div className="page-container">
-      <h2>WordPress Users</h2>
-      <table className="user-table">
+      <h2 style={{ marginBottom: "20px" }}>WordPress Users</h2>
+      <table style={tableStyle}>
         <thead>
-          <tr>
-            <th>WP ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Balance</th>
-            <th>Actions</th>
+          <tr style={{ backgroundColor: "#f8f9fa", textAlign: "left" }}>
+            <th style={thStyle}>WP ID</th>
+            <th style={thStyle}>Name</th>
+            <th style={thStyle}>Email</th>
+            <th style={thStyle}>Balance</th>
+            <th style={thStyle}>Actions</th>
           </tr>
         </thead>
         <tbody>
           {users.map(user => (
-            <tr key={user.id}>
-              <td>{user.wp_user_id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>${Number(user.current_balance).toFixed(2)}</td>
-              <td>
-                {/* Dynamic Navigation to the user detail page */}
-                <button onClick={() => navigate(`/users/${user.wp_user_id}`)}>
-                  View Details & History
+            <tr key={user.id} style={{ borderBottom: "1px solid #eee" }}>
+              <td style={tdStyle}>{user.wp_user_id}</td>
+              <td style={tdStyle}>{user.name}</td>
+              <td style={tdStyle}>{user.email}</td>
+              <td style={{ ...tdStyle, fontWeight: "bold", color: "#27ae60" }}>
+                ${Number(user.current_balance).toFixed(2)}
+              </td>
+              <td style={tdStyle}>
+                {/* FIX: Use state setters instead of navigate() */}
+                <button 
+                  onClick={() => {
+                    setSelectedUserId(user.wp_user_id); // Pass ID to Dashboard
+                    setActiveTab("user-details");      // Switch tab
+                  }}
+                  style={manageBtnStyle}
+                >
+                  Manage Activity
                 </button>
               </td>
             </tr>
@@ -60,6 +67,21 @@ const Users = () => {
       </table>
     </div>
   );
+};
+
+// Simple styles for the table
+const tableStyle = { width: "100%", borderCollapse: "collapse", backgroundColor: "white", borderRadius: "8px", overflow: "hidden" };
+const thStyle = { padding: "12px", borderBottom: "2px solid #eee", fontSize: "14px", color: "#666" };
+const tdStyle = { padding: "12px", fontSize: "14px" };
+const manageBtnStyle = { 
+  backgroundColor: "#2563eb", 
+  color: "white", 
+  border: "none", 
+  padding: "8px 12px", 
+  borderRadius: "4px", 
+  cursor: "pointer",
+  fontSize: "12px",
+  fontWeight: "600"
 };
 
 export default Users;
