@@ -144,7 +144,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
               {userData.conversions?.length > 0 ? (
                 userData.conversions.map((c, i) => (
                   <tr key={i} style={trStyle}>
-                    <td style={tdStyle}>{c.campaign_id}</td>
+                    <td style={tdStyle}>{c.campaign_id || "N/A" }</td>
                     <td style={{ ...tdStyle, color: "#059669", fontWeight: "bold" }}>${c.payout}</td>
                     <td style={{ ...tdStyle, color: "#059669", fontWeight: "bold" }}>${c.commission}</td>
                     <td style={tdStyle}>
