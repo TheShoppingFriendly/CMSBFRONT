@@ -135,6 +135,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
               <tr style={theadStyle}>
                 <th style={thStyle}>Campaign</th>
                 <th style={thStyle}>Payout</th>
+                <th style={thStyle}>Commission</th>
                 <th style={thStyle}>Status</th>
                 <th style={thStyle}>Date</th>
               </tr>
@@ -143,8 +144,9 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
               {userData.conversions?.length > 0 ? (
                 userData.conversions.map((c, i) => (
                   <tr key={i} style={trStyle}>
-                    <td style={tdStyle}>{c.campaign_name}</td>
+                    <td style={tdStyle}>{c.campaign_id}</td>
                     <td style={{ ...tdStyle, color: "#059669", fontWeight: "bold" }}>${c.payout}</td>
+                    <td style={{ ...tdStyle, color: "#059669", fontWeight: "bold" }}>${c.commission}</td>
                     <td style={tdStyle}>
                        <span style={statusBadge(c.status)}>{c.status}</span>
                     </td>
