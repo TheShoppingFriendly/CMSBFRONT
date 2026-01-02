@@ -217,7 +217,7 @@ const Dashboard = () => {
                 fontWeight: "700",
                 color: "#9b59b6"
               }}>
-                {loading ? "..." : `${conversionRate}%`}
+                {loading ? "..." : `{conversionRate}%`}
               </h3>
             </div>
             <div style={{
@@ -467,7 +467,7 @@ const Dashboard = () => {
                       fontWeight: "700",
                       color: "#27ae60"
                     }}>
-                      ${conversion.payout || "0.00"}
+                      {conversion.payout || "0.00"}
                     </span>
                   </div>
                   <div style={{

@@ -23,13 +23,13 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
   };
 
   const menuItems = [
-    { id: "home", label: "Home", badge: null, icon: "🏠" },
-    { id: "clicks", label: "Clicks", badge: clicksCount, icon: "👆" },
-    { id: "conversions", label: "Conversions", badge: conversionsCount, icon: "💰" },
+    { id: "home", label: "Home", badge: null, icon: "" },
+    { id: "clicks", label: "Clicks", badge: clicksCount, icon: "" },
+    { id: "conversions", label: "Conversions", badge: conversionsCount, icon: "" },
     { 
       id: "campaigns", 
       label: "Campaigns", 
-      icon: "📢",
+      icon: "",
       submenu: [
         { id: "add-campaign", label: "Add Campaign" },
         { id: "all-campaigns", label: "All Campaigns" }
@@ -39,7 +39,7 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
     { 
       id: "wp-users", 
       label: "WordPress Users", 
-      icon: "👥",
+      icon: "",
       submenu: [
         { id: "users-list", label: "All Users" },
         { id: "user-details", label: "User Management" } 
@@ -186,7 +186,7 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
-              <span style={{ fontSize: "18px" }}>🚪</span>
+              <span style={{ fontSize: "18px" }}></span>
               Logout
             </button>
           </div>

@@ -2,59 +2,59 @@ import React, { useState, useEffect } from 'react';
 import api from "../api/axios";
 
 const UserDetails = ({ wp_user_id, setActiveTab }) => {
-  const [userData, setUserData] = useState({ clicks: [], conversions: [] });
+  const [userData, setUserData] = useState({ clicks: [], conversions: [], logs: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [amount, setAmount] = useState("");
+  
+  // Settlement State
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [filterDate, setFilterDate] = useState(""); 
   const [reason, setReason] = useState("");
   const [updating, setUpdating] = useState(false);
 
+  const fetchUserActivity = async () => {
+    if (!wp_user_id) return;
+    try {
+      setLoading(true);
+      const res = await api.get(`/users/${wp_user_id}/activity`);
+      setUserData(res.data);
+    } catch (err) {
+      setError(`Could not load activity: ${err.response?.data?.error || err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUserActivity = async () => {
-      // 1. Critical Check: If wp_user_id is missing, we stop here.
-      if (!wp_user_id) {
-        console.error("UserDetails received no wp_user_id prop");
-        setError("No User ID selected. Please go back and select a user.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // 2. Fetch Data (Ensure this path matches your backend exactly)
-        const res = await api.get(`/users/${wp_user_id}/activity`);
-        
-        console.log("Activity Data received:", res.data);
-        setUserData(res.data);
-      } catch (err) {
-        console.error("API Error:", err);
-        setError(`Could not load activity: ${err.response?.data?.error || err.message}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUserActivity();
   }, [wp_user_id]);
 
-  const handleUpdateBalance = async (e) => {
+  // Filter conversions based on the Admin's chosen T&C date window
+  const filteredConversions = userData.conversions.filter(c => {
+    if (!filterDate) return true;
+    return new Date(c.created_at) <= new Date(filterDate);
+  });
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const handleProcessSettlement = async (e) => {
     e.preventDefault();
+    if (selectedIds.length === 0) return alert("Please select conversions to pay.");
+    
     setUpdating(true);
     try {
       await api.patch(`/users/update-balance`, {
         wp_user_id: parseInt(wp_user_id),
-        amount: parseFloat(amount),
-        reason
+        conversion_ids: selectedIds,
+        reason: reason || "Standard Settlement"
       });
-      alert("Balance Updated Successfully!");
-      setAmount("");
-      setReason("");
       
-      // Refresh data to show new logs if applicable
-      const res = await api.get(`/users/${wp_user_id}/activity`);
-      setUserData(res.data);
+      alert("Settlement Successful! Balance updated and items tagged.");
+      setSelectedIds([]);
+      setReason("");
+      fetchUserActivity(); // Refresh to show new balance and updated logs
     } catch (err) {
       alert("Update failed: " + (err.response?.data?.error || "Server error"));
     } finally {
@@ -62,151 +62,160 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
     }
   };
 
-  // Error State Render
-  if (error) return (
-    <div style={{ padding: "40px", textAlign: "center", background: "#fff", borderRadius: "12px", border: "1px solid #feb2b2" }}>
-      <h3 style={{ color: "#c53030" }}>Error</h3>
-      <p style={{ color: "#742a2a" }}>{error}</p>
-      <button 
-        onClick={() => setActiveTab("users-list")}
-        style={{ padding: "10px 20px", background: "#3182ce", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer", marginTop: "10px" }}
-      >
-        Go Back to User List
-      </button>
-    </div>
-  );
+  const totalSelectedPayout = userData.conversions
+    .filter(c => selectedIds.includes(c.id))
+    .reduce((sum, c) => sum + parseFloat(c.payout), 0);
 
-  // Loading State Render
-  if (loading) return (
-    <div style={{ padding: "100px", textAlign: "center" }}>
-      <div className="spinner" style={spinnerStyle}></div>
-      <p style={{ marginTop: "20px", color: "#666", fontWeight: "600" }}>
-        Loading Ledger for User #{wp_user_id}...
-      </p>
-    </div>
-  );
+  if (loading) return <div style={{ padding: "100px", textAlign: "center" }}>Loading Activity...</div>;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "25px", maxWidth: "100%" }}>
       
-      {/* HEADER WITH BACK BUTTON */}
+      {/* HEADER */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <button 
           onClick={() => setActiveTab("users-list")}
-          style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontWeight: "600", fontSize: "14px" }}
+          style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontWeight: "600" }}
         >
           ← Back to Users List
         </button>
-        <span style={{ color: "#6b7280", fontSize: "14px" }}>User ID: <strong>#{wp_user_id}</strong></span>
+        <span style={{ color: "#6b7280" }}>Managing Payouts for User <strong>#{wp_user_id}</strong></span>
       </div>
 
-      {/* SECTION 1: BALANCE ADJUSTMENT */}
+      {/* SECTION 1: SETTLEMENT CONTROL CENTER */}
       <div style={cardStyle}>
-        <h3 style={{ marginTop: 0, fontSize: "18px", color: "#111827" }}>Manual Balance Adjustment</h3>
-        <form onSubmit={handleUpdateBalance} style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Amount ($)</label>
+        <h3 style={{ marginTop: 0, fontSize: "18px" }}>Process New Settlement</h3>
+        <div style={{ display: "flex", gap: "15px", marginBottom: "20px", flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 200px" }}>
+            <label style={labelStyle}>T&C Filter (Conversions older than):</label>
+            <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)} style={{...inputStyle, width: "100%"}} />
+          </div>
+          <div style={{ flex: "2 1 300px" }}>
+            <label style={labelStyle}>Settlement Note / Reference:</label>
             <input 
-              type="number" step="0.01" placeholder="e.g. 5.00 or -2.50" 
-              value={amount} onChange={(e) => setAmount(e.target.value)}
-              style={{ ...inputStyle, width: "100%" }} required 
+               type="text" placeholder="e.g. Jan Week 1 Payout" 
+               value={reason} onChange={e => setReason(e.target.value)} 
+               style={{...inputStyle, width: "100%"}} 
             />
           </div>
-          <div style={{ flex: 2 }}>
-            <label style={labelStyle}>Reason / Note</label>
-            <input 
-              type="text" placeholder="Adjustment reason..." 
-              value={reason} onChange={(e) => setReason(e.target.value)}
-              style={{ ...inputStyle, width: "100%" }} required 
-            />
+        </div>
+
+        <div style={{ background: "#f0f9ff", padding: "15px", borderRadius: "8px", border: "1px solid #bae6fd", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <span style={{ fontSize: "14px", color: "#0369a1" }}>Selected Items: <strong>{selectedIds.length}</strong></span>
+            <span style={{ marginLeft: "20px", fontSize: "14px", color: "#0369a1" }}>Total Settlement: <strong style={{fontSize: "18px"}}>${totalSelectedPayout.toFixed(2)}</strong></span>
           </div>
-          <button type="submit" disabled={updating} style={btnStyle}>
-            {updating ? "Updating..." : "Apply Change"}
+          <button 
+             onClick={handleProcessSettlement} 
+             disabled={updating || selectedIds.length === 0} 
+             style={{ ...btnStyle, backgroundColor: selectedIds.length > 0 ? "#0284c7" : "#94a3b8" }}
+          >
+            {updating ? "Processing..." : "Approve & Update Balance"}
           </button>
-        </form>
+        </div>
       </div>
 
-      {/* SECTION 2: CONVERSIONS TABLE */}
+      {/* SECTION 2: CONVERSIONS TABLE (WITH CHECKBOXES) */}
       <div style={cardStyle}>
-        <h3 style={tableTitleStyle}>Recent Conversions</h3>
+        <h3 style={tableTitleStyle}>Conversions & Payout Status</h3>
         <div style={{ overflowX: "auto" }}>
           <table style={tableStyle}>
             <thead>
               <tr style={theadStyle}>
-                <th style={thStyle}>Campaign</th>
+                <th style={thStyle}>Settle</th>
+                <th style={thStyle}>Campaign ID</th>
                 <th style={thStyle}>Payout</th>
-                <th style={thStyle}>Commission</th>
                 <th style={thStyle}>Status</th>
+                <th style={thStyle}>Settlement</th>
                 <th style={thStyle}>Date</th>
               </tr>
             </thead>
             <tbody>
-              {userData.conversions?.length > 0 ? (
-                userData.conversions.map((c, i) => (
-                  <tr key={i} style={trStyle}>
-                    <td style={tdStyle}>{c.campaign_id || "N/A" }</td>
-                    <td style={{ ...tdStyle, color: "#059669", fontWeight: "bold" }}>${c.payout}</td>
-                    <td style={{ ...tdStyle, color: "#059669", fontWeight: "bold" }}>${c.commission}</td>
+              {filteredConversions.length > 0 ? (
+                filteredConversions.map((c) => (
+                  <tr key={c.id} style={trStyle}>
                     <td style={tdStyle}>
-                       <span style={statusBadge(c.status)}>{c.status}</span>
+                      {c.payout_status === 'approved' ? (
+                        <span title="Already Paid">✅</span>
+                      ) : (
+                        <input 
+                          type="checkbox" 
+                          checked={selectedIds.includes(c.id)} 
+                          onChange={() => toggleSelect(c.id)} 
+                          style={{width: "18px", height: "18px"}}
+                        />
+                      )}
+                    </td>
+                    <td style={tdStyle}>{c.campaign_id || "N/A"}</td>
+                    <td style={{ ...tdStyle, color: "#059669", fontWeight: "bold" }}>${c.payout}</td>
+                    <td style={tdStyle}><span style={statusBadge(c.status)}>{c.status}</span></td>
+                    <td style={tdStyle}>
+                        <span style={{...statusBadge(c.payout_status), backgroundColor: c.payout_status === 'approved' ? '#dcfce7' : '#f1f5f9'}}>
+                            {c.payout_status}
+                        </span>
                     </td>
                     <td style={tdStyle}>{new Date(c.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan="4" style={emptyStyle}>No conversions recorded for this user.</td></tr>
+                <tr><td colSpan="6" style={emptyStyle}>No conversions found for this date range.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* SECTION 3: CLICKS TABLE */}
+      {/* SECTION 3: AUDIT LEDGER (BEFORE/AFTER SNAPSHOTS) */}
       <div style={cardStyle}>
-        <h3 style={tableTitleStyle}>Click History</h3>
+        <h3 style={tableTitleStyle}>Financial Audit Ledger</h3>
         <div style={{ overflowX: "auto" }}>
           <table style={tableStyle}>
             <thead>
               <tr style={theadStyle}>
-                <th style={thStyle}>Click ID</th>
-                <th style={thStyle}>IP Address</th>
-                <th style={thStyle}>Time</th>
+                <th style={thStyle}>Date</th>
+                <th style={thStyle}>Previous Bal</th>
+                <th style={thStyle}>Amount Added</th>
+                <th style={thStyle}>New Balance</th>
+                <th style={thStyle}>Details / Reason</th>
               </tr>
             </thead>
             <tbody>
-              {userData.clicks?.length > 0 ? (
-                userData.clicks.map((clk, i) => (
+              {userData.logs?.length > 0 ? (
+                userData.logs.map((log, i) => (
                   <tr key={i} style={trStyle}>
-                    <td style={{ ...tdStyle, fontFamily: "monospace", color: "#3b82f6" }}>{clk.clickid}</td>
-                    <td style={tdStyle}>{clk.ip_address}</td>
-                    <td style={tdStyle}>{new Date(clk.created_at).toLocaleString()}</td>
+                    <td style={tdStyle}>{new Date(log.created_at).toLocaleDateString()}</td>
+                    <td style={tdStyle}>${log.previous_balance}</td>
+                    <td style={{ ...tdStyle, color: "#16a34a", fontWeight: "bold" }}>+${log.amount_changed}</td>
+                    <td style={{ ...tdStyle, fontWeight: "bold" }}>${log.new_balance}</td>
+                    <td style={{ ...tdStyle, fontSize: "12px", color: "#64748b" }}>
+                        <strong>{log.reason}</strong><br/>
+                        {log.campaign_summary}
+                    </td>
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan="3" style={emptyStyle}>No click tracking found for this user.</td></tr>
+                <tr><td colSpan="5" style={emptyStyle}>No balance history found.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
-
     </div>
   );
 };
 
-// --- STYLES ---
+// --- STYLES (Kept consistent with your UI) ---
 const cardStyle = { backgroundColor: "#fff", padding: "24px", borderRadius: "12px", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" };
 const labelStyle = { display: "block", marginBottom: "6px", fontSize: "12px", fontWeight: "600", color: "#4b5563" };
 const inputStyle = { padding: "10px 14px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px" };
-const btnStyle = { padding: "10px 24px", backgroundColor: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", height: "42px" };
+const btnStyle = { padding: "10px 24px", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" };
 const tableStyle = { width: "100%", borderCollapse: "collapse" };
 const tableTitleStyle = { marginTop: 0, paddingBottom: "12px", borderBottom: "1px solid #f3f4f6", marginBottom: "15px", fontSize: "16px" };
 const theadStyle = { backgroundColor: "#f9fafb", textAlign: "left" };
-const thStyle = { padding: "12px", fontSize: "12px", color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.025em" };
+const thStyle = { padding: "12px", fontSize: "12px", color: "#6b7280", textTransform: "uppercase" };
 const tdStyle = { padding: "12px", fontSize: "14px", color: "#374151" };
 const trStyle = { borderBottom: "1px solid #f3f4f6" };
 const emptyStyle = { padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: "14px" };
-const spinnerStyle = { border: "4px solid #f3f3f3", borderTop: "4px solid #3498db", borderRadius: "50%", width: "40px", height: "40px", animation: "spin 1s linear infinite", margin: "0 auto" };
 
 const statusBadge = (status) => ({
     padding: "4px 8px",

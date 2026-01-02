@@ -554,7 +554,7 @@ const Conversions = ({ setCount }) => {
                       color: "#27ae60",
                       fontSize: "15px"
                     }}>
-                      ${conversion.payout || "0.00"}
+                      {conversion.payout || "0.00"}
                     </span>
                   </td>
                   <td style={tableCellStyle}>

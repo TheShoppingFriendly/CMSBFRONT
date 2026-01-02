@@ -47,7 +47,7 @@ const Users = ({ setActiveTab, setSelectedUserId }) => {
               <td style={tdStyle}>{user.name}</td>
               <td style={tdStyle}>{user.email}</td>
               <td style={{ ...tdStyle, fontWeight: "bold", color: "#27ae60" }}>
-                ${Number(user.current_balance).toFixed(2)}
+                {Number(user.current_balance).toFixed(2)}
               </td>
               <td style={tdStyle}>
                 {/* FIX: Use state setters instead of navigate() */}
