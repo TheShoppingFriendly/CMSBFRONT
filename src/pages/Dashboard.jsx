@@ -217,7 +217,7 @@ const Dashboard = () => {
                 fontWeight: "700",
                 color: "#9b59b6"
               }}>
-                {loading ? "..." : `{conversionRate}%`}
+                {loading ? "..." : `${conversionRate}%`}
               </h3>
             </div>
             <div style={{
@@ -339,7 +339,7 @@ const Dashboard = () => {
             fontSize: "14px",
             color: "#6b7280"
           }}>
-            <strong style={{ color: "#1f2937" }}>{conversionRate}%</strong> of clicks resulted in conversions
+            <strong style={{ color: "#1f2937" }}>${conversionRate}%</strong> of clicks resulted in conversions
           </p>
         </div>
       </div>
