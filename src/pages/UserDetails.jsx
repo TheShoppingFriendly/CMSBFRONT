@@ -149,7 +149,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
               <tr style={theadStyle}>
                 <th style={thStyle}>Settle</th>
                 <th style={thStyle}>Campaign</th>
-                <th style={thStyle}>Tracked</th>
+                <th style={thStyle}>Commission</th>
                 <th style={thStyle}>Actual to Pay</th>
                 <th style={thStyle}>Type</th>
                 <th style={thStyle}>Date</th>
@@ -174,7 +174,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
                         )}
                       </td>
                       <td style={tdStyle}>{c.campaign_id || "N/A"}</td>
-                      <td style={tdStyle}>${c.payout}</td>
+                      <td style={tdStyle}>${c.commission}</td>
                       <td style={tdStyle}>
                         {item ? (
                           <input 
