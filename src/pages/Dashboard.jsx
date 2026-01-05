@@ -9,6 +9,10 @@ import AdminProfile from "./AdminProfile";
 import api from "../api/axios";
 import UserDetails from "./UserDetails";
 import Users from "./Users";
+import FinancialOverview from './accounting/FinancialOverview';
+import GlobalLedger from './accounting/GlobalLedger';
+import RevenueAnalysis from './accounting/RevenueAnalysis';
+import AdminAuditTrail from './accounting/AdminAuditTrail';
 
 
 const Dashboard = () => {
@@ -529,7 +533,16 @@ const Dashboard = () => {
       return <Users setActiveTab={setActiveTab} setSelectedUserId={setSelectedUserId} />; // Pass setActiveTab to allow clicking a user
     case "user-details":
       return <UserDetails wp_user_id={selectedUserId} 
-      setActiveTab={setActiveTab} />;
+      setActiveTab={setActiveTab} />; 
+      case "finance-dashboard":
+      return <FinancialOverview />;
+    case "global-ledger":
+      return <GlobalLedger />;
+    case "revenue-analysis":
+      return <RevenueAnalysis />;
+    case "audit-logs":
+      return <AdminAuditTrail />;
+
       default:
         return renderHomePage();
     }
