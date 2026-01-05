@@ -143,7 +143,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
             <span style={{ fontSize: "14px" }}>Selected: <strong>{settlements.length}</strong> items</span>
             <span style={{ marginLeft: "20px", fontSize: "14px" }}>
                 Net Impact: <strong style={{fontSize: "18px", color: totalDelta >= 0 ? "#0369a1" : "#e11d48"}}>
-                    {totalDelta >= 0 ? `+$${totalDelta.toFixed(2)}` : `-$${Math.abs(totalDelta).toFixed(2)}`}
+                    {totalDelta >= 0 ? `+${totalDelta.toFixed(2)}` : `-${Math.abs(totalDelta).toFixed(2)}`}
                 </strong>
             </span>
           </div>
@@ -191,7 +191,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
                         )}
                       </td>
                       <td style={tdStyle}>{c.campaign_id || "N/A"}</td>
-                      <td style={tdStyle}>${c.commission}</td>
+                      <td style={tdStyle}>{c.commission}</td>
                       <td style={tdStyle}>
                         {item ? (
                           <input 
@@ -201,7 +201,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
                             style={tableInputStyle}
                           />
                         ) : (
-                          <span style={{color: "#9ca3af"}}>{c.actual_paid_amount ? `$${c.actual_paid_amount}` : `$${c.commission}`}</span>
+                          <span style={{color: "#9ca3af"}}>{c.actual_paid_amount ? `${c.actual_paid_amount}` : `${c.commission}`}</span>
                         )}
                       </td>
                       <td style={tdStyle}>
@@ -255,7 +255,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
                   <tr key={i} style={trStyle}>
                     <td style={tdStyle}>{new Date(log.created_at).toLocaleDateString()}</td>
                     <td style={{ ...tdStyle, color: log.amount_changed >= 0 ? "#16a34a" : "#e11d48", fontWeight: "bold" }}>
-                        {log.amount_changed >= 0 ? `+$${log.amount_changed}` : `-$${Math.abs(log.amount_changed)}`}
+                        {log.amount_changed >= 0 ? `+${log.amount_changed}` : `-${Math.abs(log.amount_changed)}`}
                     </td>
                     <td style={{ ...tdStyle }}>${log.new_balance}</td>
                     <td style={{ ...tdStyle, fontSize: "12px" }}>{log.reason}</td>
