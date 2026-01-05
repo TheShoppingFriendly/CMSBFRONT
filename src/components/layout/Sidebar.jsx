@@ -25,13 +25,13 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
   };
 
   const menuItems = [
-    { id: "home", label: "Home", badge: null, icon: "🏠" },
-    { id: "clicks", label: "Clicks", badge: clicksCount, icon: "🖱️" },
-    { id: "conversions", label: "Conversions", badge: conversionsCount, icon: "🎯" },
+    { id: "home", label: "Home", badge: null, icon: "" },
+    { id: "clicks", label: "Clicks", badge: clicksCount, icon: "" },
+    { id: "conversions", label: "Conversions", badge: conversionsCount, icon: "" },
     { 
       id: "campaigns", 
       label: "Campaigns", 
-      icon: "📢",
+      icon: "",
       submenu: [
         { id: "add-campaign", label: "Add Campaign" },
         { id: "all-campaigns", label: "All Campaigns" }
@@ -40,7 +40,7 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
     { 
       id: "wp-users", 
       label: "WordPress Users", 
-      icon: "👥",
+      icon: "",
       submenu: [
         { id: "users-list", label: "All Users" },
         { id: "user-details", label: "User Management" } 
@@ -50,7 +50,7 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
     { 
       id: "accounting", 
       label: "Accounting", 
-      icon: "📊",
+      icon: "",
       submenu: [
         { id: "finance-dashboard", label: "Financial Overview" },
         { id: "global-ledger", label: "Global Ledger" },
@@ -58,8 +58,8 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
         { id: "audit-logs", label: "Admin Audit Trail" }
       ]
     },
-    { id: "cashbacks", label: "Cashbacks", badge: "Soon", icon: "💸" },
-    { id: "admin-profile", label: "Admin Profile", icon: "👤" },
+    { id: "cashbacks", label: "Cashbacks", badge: "Soon", icon: "" },
+    { id: "admin-profile", label: "Admin Profile", icon: "" },
   ];
 
   return (
