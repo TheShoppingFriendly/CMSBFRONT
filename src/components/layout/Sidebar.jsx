@@ -14,10 +14,34 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  const handleNavClick = (tab) => {
-    setActiveTab(tab);
-    if (window.innerWidth < 768) setSidebarOpen(false);
+const handleNavClick = (tab) => {
+  setActiveTab(tab);
+
+  const routeMap = {
+    home: "/dashboard",
+    clicks: "/dashboard",
+    conversions: "/dashboard",
+
+    "add-campaign": "/campaigns",
+    "all-campaigns": "/campaigns",
+
+    "users-list": "/users",
+    "user-details": "/users",
+
+    // ACCOUNTING ROUTES
+    "finance-dashboard": "/accounting/overview",
+    "global-ledger": "/accounting/ledger",
+    "revenue-analysis": "/accounting/revenue",
+    "audit-logs": "/accounting/audit",
   };
+
+  if (routeMap[tab]) {
+    navigate(routeMap[tab]);
+  }
+
+  if (window.innerWidth < 768) setSidebarOpen(false);
+};
+
 
   const handleLogout = () => {
     logout();

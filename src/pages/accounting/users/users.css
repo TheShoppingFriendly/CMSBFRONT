@@ -1,0 +1,15 @@
+.user-finance {
+  padding: 20px;
+}
+
+.wallet-card {
+  background: #1f2933;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.timeline-row {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}

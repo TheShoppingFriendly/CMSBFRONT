@@ -1,0 +1,38 @@
+.overview {
+  padding: 20px;
+}
+
+.profit-grid {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #1f2933;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 200px;
+}
+
+.card h4 {
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.card span {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.chart-box {
+  background: #1f2933;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.chart-placeholder {
+  height: 200px;
+  background: #111827;
+  border-radius: 6px;
+}

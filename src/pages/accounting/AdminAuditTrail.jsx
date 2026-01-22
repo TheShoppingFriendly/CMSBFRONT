@@ -55,7 +55,7 @@ const AdminAuditTrail = () => {
             {selectedLog && (
                 <div className="drawer-overlay" onClick={() => setSelectedLog(null)}>
                     <div className="drawer" onClick={e => e.stopPropagation()}>
-                        <button className="close-drawer" onClick={() => setSelectedLog(null)}>✕ Close Details</button>
+                        <button className="close-drawer" onClick={() => setSelectedLog(null)}>✕</button>
                         
                         <h3 style={{margin: '0 0 10px 0'}}>Transaction Evidence</h3>
                         <p style={{fontSize: '14px', color: '#666'}}>Full details and database linking for this action.</p>

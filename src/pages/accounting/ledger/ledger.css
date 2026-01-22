@@ -1,0 +1,36 @@
+.ledger {
+  padding: 20px;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ledger-table th,
+.ledger-table td {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 350px;
+  height: 100%;
+  background: #111827;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.journey-row {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}
