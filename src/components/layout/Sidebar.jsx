@@ -1,47 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [campaignSubmenuOpen, setCampaignSubmenuOpen] = useState(false);
-  const [usersSubmenuOpen, setUsersSubmenuOpen] = useState(false); 
-  // NEW: State for Accounting Submenu
-  const [accountingSubmenuOpen, setAccountingSubmenuOpen] = useState(false); 
-  
+  const [usersSubmenuOpen, setUsersSubmenuOpen] = useState(false);
+  const [accountingSubmenuOpen, setAccountingSubmenuOpen] = useState(false);
+
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-const handleNavClick = (tab) => {
-  setActiveTab(tab);
+  // ==============================
+  // AUTO SYNC SIDEBAR WITH URL
+  // ==============================
+  useEffect(() => {
+    const path = location.pathname;
 
-  const routeMap = {
-    home: "/dashboard",
-    clicks: "/dashboard",
-    conversions: "/dashboard",
+    const routeMap = {
+      "/dashboard": "home",
 
-    "add-campaign": "/campaigns",
-    "all-campaigns": "/campaigns",
+      "/campaigns": "all-campaigns",
+      "/users": "users-list",
 
-    "users-list": "/users",
-    "user-details": "/users",
+      "/accounting/overview": "finance-dashboard",
+      "/accounting/ledger": "global-ledger",
+      "/accounting/revenue": "revenue-analysis",
+      "/accounting/audit": "audit-logs",
+    };
 
-    // ACCOUNTING ROUTES
-    "finance-dashboard": "/accounting/overview",
-    "global-ledger": "/accounting/ledger",
-    "revenue-analysis": "/accounting/revenue",
-    "audit-logs": "/accounting/audit",
+    const matched = Object.keys(routeMap).find((r) =>
+      path.startsWith(r)
+    );
+
+    if (matched) {
+      const tab = routeMap[matched];
+      setActiveTab(tab);
+
+      if (tab.includes("campaign")) setCampaignSubmenuOpen(true);
+      if (tab.includes("user")) setUsersSubmenuOpen(true);
+      if (path.startsWith("/accounting")) setAccountingSubmenuOpen(true);
+    }
+  }, [location.pathname, setActiveTab]);
+
+  // ==============================
+  // NAV HANDLER
+  // ==============================
+  const handleNavClick = (tab) => {
+    setActiveTab(tab);
+
+    const routeMap = {
+      home: "/dashboard",
+
+      "add-campaign": "/campaigns",
+      "all-campaigns": "/campaigns",
+
+      "users-list": "/users",
+      "user-details": "/users",
+
+      // ACCOUNTING
+      "finance-dashboard": "/accounting/overview",
+      "global-ledger": "/accounting/ledger",
+      "revenue-analysis": "/accounting/revenue",
+      "audit-logs": "/accounting/audit",
+    };
+
+    if (routeMap[tab]) {
+      navigate(routeMap[tab]);
+    }
+
+    if (window.innerWidth < 768) setSidebarOpen(false);
   };
-
-  if (routeMap[tab]) {
-    navigate(routeMap[tab]);
-  }
-
-  if (window.innerWidth < 768) setSidebarOpen(false);
-};
-
 
   const handleLogout = () => {
     logout();
@@ -49,139 +81,265 @@ const handleNavClick = (tab) => {
   };
 
   const menuItems = [
-    { id: "home", label: "Home", badge: null, icon: "" },
-    { id: "clicks", label: "Clicks", badge: clicksCount, icon: "" },
-    { id: "conversions", label: "Conversions", badge: conversionsCount, icon: "" },
-    { 
-      id: "campaigns", 
-      label: "Campaigns", 
-      icon: "",
+    { id: "home", label: "Home" },
+    { id: "clicks", label: "Clicks", badge: clicksCount },
+    { id: "conversions", label: "Conversions", badge: conversionsCount },
+
+    {
+      id: "campaigns",
+      label: "Campaigns",
       submenu: [
         { id: "add-campaign", label: "Add Campaign" },
-        { id: "all-campaigns", label: "All Campaigns" }
-      ]
+        { id: "all-campaigns", label: "All Campaigns" },
+      ],
     },
-    { 
-      id: "wp-users", 
-      label: "WordPress Users", 
-      icon: "",
+
+    {
+      id: "wp-users",
+      label: "WordPress Users",
       submenu: [
         { id: "users-list", label: "All Users" },
-        { id: "user-details", label: "User Management" } 
-      ]
+        { id: "user-details", label: "User Management" },
+      ],
     },
-    // NEW: Accounting Module Section
-    { 
-      id: "accounting", 
-      label: "Accounting", 
-      icon: "",
+
+    {
+      id: "accounting",
+      label: "Accounting",
       submenu: [
         { id: "finance-dashboard", label: "Financial Overview" },
         { id: "global-ledger", label: "Global Ledger" },
         { id: "revenue-analysis", label: "Revenue Streams" },
-        { id: "audit-logs", label: "Admin Audit Trail" }
-      ]
+        { id: "audit-logs", label: "Admin Audit Trail" },
+      ],
     },
-    { id: "cashbacks", label: "Cashbacks", badge: "Soon", icon: "" },
-    { id: "admin-profile", label: "Admin Profile", icon: "" },
+
+    { id: "cashbacks", label: "Cashbacks", badge: "Soon" },
+    { id: "admin-profile", label: "Admin Profile" },
   ];
 
   return (
     <>
-      <button onClick={toggleSidebar} className="hamburger-menu" style={{ position: "fixed", top: "15px", left: "15px", zIndex: 1100, padding: "10px", backgroundColor: "#2c3e50", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}> ☰ </button>
-      {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="sidebar-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 999 }} />}
+      <button
+        onClick={toggleSidebar}
+        style={{
+          position: "fixed",
+          top: "15px",
+          left: "15px",
+          zIndex: 1100,
+          padding: "10px",
+          backgroundColor: "#2c3e50",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        ☰
+      </button>
 
-      <aside className="sidebar" style={{ transition: "transform 0.3s ease", transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)", position: "fixed", width: "240px", height: "100vh", backgroundColor: "#2c3e50", color: "white", zIndex: 1000, overflowY: "auto" }}>
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 999,
+          }}
+        />
+      )}
+
+      <aside
+        style={{
+          transition: "transform 0.3s ease",
+          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          position: "fixed",
+          width: "240px",
+          height: "100vh",
+          backgroundColor: "#2c3e50",
+          color: "white",
+          zIndex: 1000,
+          overflowY: "auto",
+        }}
+      >
         <div style={{ padding: "20px" }}>
-          <div style={{ marginBottom: "30px", paddingBottom: "20px", borderBottom: "1px solid #34495e" }}>
-            <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "700" }}>Admin Panel</h2>
-            <p style={{ margin: "5px 0 0 0", fontSize: "12px", color: "#95a5a6" }}>Accounting & Management</p>
+          <div
+            style={{
+              marginBottom: "30px",
+              paddingBottom: "20px",
+              borderBottom: "1px solid #34495e",
+            }}
+          >
+            <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "700" }}>
+              Admin Panel
+            </h2>
+            <p style={{ margin: "5px 0 0", fontSize: "12px", color: "#95a5a6" }}>
+              Accounting & Management
+            </p>
           </div>
-          
+
           <nav>
-            {menuItems.map((item) => (
-              <div key={item.id}>
-                <button
-                  onClick={() => {
-                    if (item.id === "campaigns") {
-                      setCampaignSubmenuOpen(!campaignSubmenuOpen);
-                    } else if (item.id === "wp-users") {
-                      setUsersSubmenuOpen(!usersSubmenuOpen);
-                    } else if (item.id === "accounting") {
-                      setAccountingSubmenuOpen(!accountingSubmenuOpen);
-                    } else {
-                      handleNavClick(item.id);
-                    }
-                  }}
-                  style={{
-                    width: "100%", padding: "12px 16px", marginBottom: "6px",
-                    backgroundColor: activeTab === item.id || (item.submenu && item.submenu.some(s => s.id === activeTab)) ? "#34495e" : "transparent",
-                    color: "white", border: "none", borderRadius: "8px", cursor: "pointer",
-                    textAlign: "left", fontSize: "14px", display: "flex", alignItems: "center",
-                    justifyContent: "space-between", fontWeight: activeTab === item.id ? "600" : "400"
-                  }}
-                >
-                  <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <span style={{ fontSize: "18px" }}>{item.icon}</span>
-                    {item.label}
-                  </span>
-                  
-                  {item.badge && (
-                    <span style={{ backgroundColor: "#e67e22", padding: "2px 8px", borderRadius: "10px", fontSize: "10px" }}>
-                      {item.badge}
-                    </span>
-                  )}
+            {menuItems.map((item) => {
+              const isSubmenuOpen =
+                (item.id === "campaigns" && campaignSubmenuOpen) ||
+                (item.id === "wp-users" && usersSubmenuOpen) ||
+                (item.id === "accounting" && accountingSubmenuOpen);
 
-                  {item.submenu && (
-                    <span style={{ 
-                      fontSize: "10px", 
-                      transition: "0.3s",
-                      transform: (
-                        (item.id === "campaigns" && campaignSubmenuOpen) || 
-                        (item.id === "wp-users" && usersSubmenuOpen) ||
-                        (item.id === "accounting" && accountingSubmenuOpen)
-                      ) ? "rotate(180deg)" : "rotate(0deg)" 
-                    }}>▼</span>
-                  )}
-                </button>
+              const isActive =
+                activeTab === item.id ||
+                item.submenu?.some((s) => s.id === activeTab);
 
-                {/* Unified Submenu Logic */}
-                {item.submenu && (
-                  ((item.id === "campaigns" && campaignSubmenuOpen) || 
-                   (item.id === "wp-users" && usersSubmenuOpen) ||
-                   (item.id === "accounting" && accountingSubmenuOpen))
-                ) && (
-                  <div style={{ marginLeft: "25px", marginBottom: "8px", paddingLeft: "10px", borderLeft: "1px solid #5a6c7d" }}>
-                    {item.submenu.map((subItem) => (
-                      <button
-                        key={subItem.id}
-                        onClick={() => handleNavClick(subItem.id)}
+              return (
+                <div key={item.id}>
+                  <button
+                    onClick={() => {
+                      if (item.id === "campaigns")
+                        setCampaignSubmenuOpen(!campaignSubmenuOpen);
+                      else if (item.id === "wp-users")
+                        setUsersSubmenuOpen(!usersSubmenuOpen);
+                      else if (item.id === "accounting")
+                        setAccountingSubmenuOpen(!accountingSubmenuOpen);
+                      else handleNavClick(item.id);
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "12px 16px",
+                      marginBottom: "6px",
+                      backgroundColor: isActive
+                        ? "#34495e"
+                        : "transparent",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      fontSize: "14px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontWeight: isActive ? "600" : "400",
+                    }}
+                  >
+                    <span>{item.label}</span>
+
+                    {item.badge && (
+                      <span
                         style={{
-                          width: "100%", padding: "8px 12px", marginBottom: "4px",
-                          backgroundColor: activeTab === subItem.id ? "#1abc9c" : "transparent",
-                          color: activeTab === subItem.id ? "white" : "#bdc3c7", 
-                          border: "none", borderRadius: "6px", cursor: "pointer",
-                          textAlign: "left", fontSize: "13px"
+                          backgroundColor: "#e67e22",
+                          padding: "2px 8px",
+                          borderRadius: "10px",
+                          fontSize: "10px",
                         }}
                       >
-                        • {subItem.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+                        {item.badge}
+                      </span>
+                    )}
+
+                    {item.submenu && (
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          transition: "0.3s",
+                          transform: isSubmenuOpen
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                        }}
+                      >
+                        ▼
+                      </span>
+                    )}
+                  </button>
+
+                  {item.submenu && isSubmenuOpen && (
+                    <div
+                      style={{
+                        marginLeft: "25px",
+                        marginBottom: "8px",
+                        paddingLeft: "10px",
+                        borderLeft: "1px solid #5a6c7d",
+                      }}
+                    >
+                      {item.submenu.map((sub) => (
+                        <button
+                          key={sub.id}
+                          onClick={() => handleNavClick(sub.id)}
+                          style={{
+                            width: "100%",
+                            padding: "8px 12px",
+                            marginBottom: "4px",
+                            backgroundColor:
+                              activeTab === sub.id
+                                ? "#1abc9c"
+                                : "transparent",
+                            color:
+                              activeTab === sub.id
+                                ? "white"
+                                : "#bdc3c7",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            fontSize: "13px",
+                          }}
+                        >
+                          • {sub.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
-          {/* User Info & Logout (Same as before) */}
-          <div style={{ marginTop: "30px", paddingTop: "20px", borderTop: "1px solid #34495e" }}>
+          <div
+            style={{
+              marginTop: "30px",
+              paddingTop: "20px",
+              borderTop: "1px solid #34495e",
+            }}
+          >
             {admin && (
-              <div style={{ padding: "12px", backgroundColor: "#34495e", borderRadius: "8px", marginBottom: "12px", fontSize: "13px" }}>
-                <div style={{ color: "#95a5a6", fontSize: "10px", textTransform: "uppercase", marginBottom: "4px" }}>Admin Session</div>
-                <div style={{ fontWeight: "600" }}>{admin.name || admin.email}</div>
+              <div
+                style={{
+                  padding: "12px",
+                  backgroundColor: "#34495e",
+                  borderRadius: "8px",
+                  marginBottom: "12px",
+                  fontSize: "13px",
+                }}
+              >
+                <div
+                  style={{
+                    color: "#95a5a6",
+                    fontSize: "10px",
+                    textTransform: "uppercase",
+                    marginBottom: "4px",
+                  }}
+                >
+                  Admin Session
+                </div>
+                <div style={{ fontWeight: "600" }}>
+                  {admin.name || admin.email}
+                </div>
               </div>
             )}
-            <button onClick={handleLogout} style={{ width: "100%", padding: "12px", backgroundColor: "#e74c3c", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>
+
+            <button
+              onClick={handleLogout}
+              style={{
+                width: "100%",
+                padding: "12px",
+                backgroundColor: "#e74c3c",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
+            >
               Logout
             </button>
           </div>
