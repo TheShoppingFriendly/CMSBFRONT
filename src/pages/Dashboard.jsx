@@ -154,7 +154,7 @@ const Dashboard = () => {
                 textTransform: "uppercase",
                 letterSpacing: "0.5px"
               }}>
-                Total Conversions
+                Total Conversion
               </p>
               <h3 style={{
                 margin: 0,
