@@ -114,12 +114,12 @@ const Clicks = () => {
         gap: "16px"
       }}>
         <div style={{
-          backgroundColor: "white",
+          // backgroundColor: "white",
           padding: "20px 24px",
           borderRadius: "12px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          // boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           flex: "1",
-          minWidth: "200px"
+          // minWidth: "200px"
         }}>
           <h2 style={{ 
             margin: "0 0 8px 0", 

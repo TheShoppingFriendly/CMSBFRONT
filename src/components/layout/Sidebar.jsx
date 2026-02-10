@@ -6,13 +6,10 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [campaignSubmenuOpen, setCampaignSubmenuOpen] = useState(false);
   const [usersSubmenuOpen, setUsersSubmenuOpen] = useState(false); 
-  // NEW: State for Accounting Submenu
   const [accountingSubmenuOpen, setAccountingSubmenuOpen] = useState(false); 
   
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
-
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const handleNavClick = (tab) => {
     setActiveTab(tab);
@@ -46,7 +43,6 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
         { id: "user-details", label: "User Management" } 
       ]
     },
-    // NEW: Accounting Module Section
     { 
       id: "accounting", 
       label: "Accounting", 
@@ -64,10 +60,38 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
 
   return (
     <>
-      <button onClick={toggleSidebar} className="hamburger-menu" style={{ position: "fixed", top: "15px", left: "15px", zIndex: 1100, padding: "10px", backgroundColor: "#2c3e50", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}> ☰ </button>
-      {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="sidebar-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 999 }} />}
+      <button 
+        onClick={() => setSidebarOpen(!sidebarOpen)} 
+        className="hamburger-menu" 
+        style={{ 
+          position: "fixed", top: "15px", left: "15px", zIndex: 1100, 
+          padding: "10px", backgroundColor: "#2c3e50", color: "white", 
+          border: "none", borderRadius: "5px", cursor: "pointer" 
+        }}
+      > 
+        ☰ 
+      </button>
 
-      <aside className="sidebar" style={{ transition: "transform 0.3s ease", transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)", position: "fixed", width: "240px", height: "100vh", backgroundColor: "#2c3e50", color: "white", zIndex: 1000, overflowY: "auto" }}>
+      {sidebarOpen && (
+        <div 
+          onClick={() => setSidebarOpen(false)} 
+          className="sidebar-overlay" 
+          style={{ 
+            position: "fixed", top: 0, left: 0, width: "100%", height: "100%", 
+            zIndex: 999, backgroundColor: "rgba(0,0,0,0.4)"
+          }} 
+        />
+      )}
+
+      <aside 
+        className="sidebar-container" 
+        style={{ 
+          transition: "transform 0.3s ease", 
+          transform: sidebarOpen ? "translateX(0)" : "translateX(-240px)", 
+          position: "fixed", width: "240px", height: "100vh", 
+          backgroundColor: "#2c3e50", color: "white", zIndex: 1000, overflowY: "auto" 
+        }}
+      >
         <div style={{ padding: "20px" }}>
           <div style={{ marginBottom: "30px", paddingBottom: "20px", borderBottom: "1px solid #34495e" }}>
             <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "700" }}>Admin Panel</h2>
@@ -98,7 +122,6 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
                   }}
                 >
                   <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <span style={{ fontSize: "18px" }}>{item.icon}</span>
                     {item.label}
                   </span>
                   
@@ -121,7 +144,6 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
                   )}
                 </button>
 
-                {/* Unified Submenu Logic */}
                 {item.submenu && (
                   ((item.id === "campaigns" && campaignSubmenuOpen) || 
                    (item.id === "wp-users" && usersSubmenuOpen) ||
@@ -149,7 +171,6 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
             ))}
           </nav>
 
-          {/* User Info & Logout (Same as before) */}
           <div style={{ marginTop: "30px", paddingTop: "20px", borderTop: "1px solid #34495e" }}>
             {admin && (
               <div style={{ padding: "12px", backgroundColor: "#34495e", borderRadius: "8px", marginBottom: "12px", fontSize: "13px" }}>
@@ -163,6 +184,17 @@ const Sidebar = ({ activeTab, setActiveTab, clicksCount, conversionsCount }) => 
           </div>
         </div>
       </aside>
+
+      <style>{`
+        @media (min-width: 768px) {
+          .sidebar-container { transform: translateX(0) !important; }
+          .hamburger-menu { display: none !important; }
+          .sidebar-overlay { display: none !important; }
+        }
+        @media (max-width: 767px) {
+          .hamburger-menu { display: block !important; }
+        }
+      `}</style>
     </>
   );
 };
