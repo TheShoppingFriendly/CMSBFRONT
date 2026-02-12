@@ -257,7 +257,7 @@ const UserDetails = ({ wp_user_id, setActiveTab }) => {
                     <td style={{ ...tdStyle, color: log.amount_changed >= 0 ? "#16a34a" : "#e11d48", fontWeight: "bold" }}>
                         {log.amount_changed >= 0 ? `+${log.amount_changed}` : `-${Math.abs(log.amount_changed)}`}
                     </td>
-                    <td style={{ ...tdStyle }}>${log.new_balance}</td>
+                    <td style={{ ...tdStyle }}>INR {log.new_balance}</td>
                     <td style={{ ...tdStyle, fontSize: "12px" }}>{log.reason}</td>
                     <td style={tdStyle}>
                         {log.status !== 'reverted' ? (

@@ -6,6 +6,8 @@ const Campaigns = ({ activeTab }) => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [viewType, setViewType] = useState("grid");
+
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -100,61 +102,205 @@ const Campaigns = ({ activeTab }) => {
       )}
 
       {/* --- Store Grid --- */}
-      {activeTab === "all-campaigns" && !loading && !error && (
-        <>
-          {stores.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#6b7280", marginTop: "40px" }}>
-              No stores found in the database.
-            </p>
-          ) : (
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-              gap: "20px"
-            }}>
-              {stores.map((store) => (
-                <div
-                  key={store.id}
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "12px",
-                    padding: "20px",
-                    backgroundColor: "#fff",
-                    transition: "transform 0.2s",
-                    cursor: "default"
-                  }}
-                >
-                  <h4 style={{ margin: 0, fontSize: "18px", fontWeight: 600, color: "#111827" }}>
+{activeTab === "all-campaigns" && !loading && !error && (
+  <>
+    {stores.length === 0 ? (
+      <p style={{ textAlign: "center", color: "#6b7280", marginTop: "40px" }}>
+        No stores found in the database.
+      </p>
+    ) : (
+      <>
+        {/* View Toggle */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "20px",
+            gap: "10px"
+          }}
+        >
+          <button
+            onClick={() => setViewType("grid")}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "6px",
+              border:
+                viewType === "grid"
+                  ? "2px solid #7c3aed"
+                  : "1px solid #e5e7eb",
+              background: "#fff",
+              cursor: "pointer",
+              fontWeight: 600
+            }}
+          >
+            Grid
+          </button>
+
+          <button
+            onClick={() => setViewType("list")}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "6px",
+              border:
+                viewType === "list"
+                  ? "2px solid #7c3aed"
+                  : "1px solid #e5e7eb",
+              background: "#fff",
+              cursor: "pointer",
+              fontWeight: 600
+            }}
+          >
+            List
+          </button>
+        </div>
+
+        {/* Stores Wrapper */}
+        <div
+          style={
+            viewType === "grid"
+              ? {
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fill, minmax(240px, 1fr))",
+                  gap: "20px"
+                }
+              : {
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "15px"
+                }
+          }
+        >
+          {stores.map((store) => (
+            <div
+              key={store.id}
+              style={{
+                border: "1px solid #e5e7eb",
+                borderRadius: "12px",
+                padding: "20px",
+                backgroundColor: "#fff",
+                transition: "transform 0.2s",
+                cursor: "default",
+                display: viewType === "list" ? "flex" : "block",
+                justifyContent: "space-between",
+                alignItems:
+                  viewType === "list" ? "center" : "initial"
+              }}
+            >
+              {viewType === "list" ? (
+                <>
+                  <div>
+                    <h4
+                      style={{
+                        margin: 0,
+                        fontSize: "18px",
+                        fontWeight: 600,
+                        color: "#111827"
+                      }}
+                    >
+                      {store.name}
+                    </h4>
+
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        color: "#6b7280",
+                        marginTop: "8px",
+                        marginBottom: "0px"
+                      }}
+                    >
+                      Slug:{" "}
+                      <code
+                        style={{
+                          backgroundColor: "#f3f4f6",
+                          padding: "2px 4px",
+                          borderRadius: "4px"
+                        }}
+                      >
+                        {store.slug}
+                      </code>
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() =>
+                      navigate(`/campaigns/${store.slug}`)
+                    }
+                    style={{
+                      padding: "10px 20px",
+                      borderRadius: "8px",
+                      border: "none",
+                      backgroundColor: "#7c3aed",
+                      color: "#fff",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontSize: "14px"
+                    }}
+                  >
+                    View Campaign
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h4
+                    style={{
+                      margin: 0,
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      color: "#111827"
+                    }}
+                  >
                     {store.name}
                   </h4>
 
-                  <p style={{ fontSize: "14px", color: "#6b7280", marginTop: "8px", marginBottom: "16px" }}>
-                    Slug: <code style={{ backgroundColor: "#f3f4f6", padding: "2px 4px", borderRadius: "4px" }}>{store.slug}</code>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#6b7280",
+                      marginTop: "8px",
+                      marginBottom: "16px"
+                    }}
+                  >
+                    Slug:{" "}
+                    <code
+                      style={{
+                        backgroundColor: "#f3f4f6",
+                        padding: "2px 4px",
+                        borderRadius: "4px"
+                      }}
+                    >
+                      {store.slug}
+                    </code>
                   </p>
 
                   <button
-  onClick={() => navigate(`/campaigns/${store.slug}`)}
-  style={{
-    width: "100%",
-    padding: "10px",
-    borderRadius: "8px",
-    border: "none",
-    backgroundColor: "#7c3aed",
-    color: "#fff",
-    fontWeight: 600,
-    cursor: "pointer",
-    fontSize: "14px"
-  }}
->
-  View Campaign
-</button>
-
-                </div>
-              ))}
+                    onClick={() =>
+                      navigate(`/campaigns/${store.slug}`)
+                    }
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "none",
+                      backgroundColor: "#7c3aed",
+                      color: "#fff",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontSize: "14px"
+                    }}
+                  >
+                    View Campaign
+                  </button>
+                </>
+              )}
             </div>
-          )}
-        </>
-      )}
+          ))}
+        </div>
+      </>
+    )}
+  </>
+)}
+
     </div>
   );
 };

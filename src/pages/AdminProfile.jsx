@@ -357,7 +357,7 @@ const AdminProfile = () => {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2980b9"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3498db"}
           >
-            <span style={{ fontSize: "18px" }}>🔑</span>
+            
             Change Password
           </button>
 
@@ -390,7 +390,7 @@ const AdminProfile = () => {
               e.currentTarget.style.boxShadow = "none";
             }}
           >
-            <span style={{ fontSize: "18px" }}>🚪</span>
+           
             Logout from Account
           </button>
         </div>
