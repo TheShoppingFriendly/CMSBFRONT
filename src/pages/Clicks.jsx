@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import Sidebar from "../components/layout/Sidebar";
 
 const Clicks = () => {
+
+  const [clicksCount, setClicksCount] = useState(0);
+  const [conversionsCount, setConversionsCount] = useState(0);
+  // const [clicks, setClicks] = useState([]);
+  // const [conversions, setConversions] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  
   const [clicks, setClicks] = useState([]);
   const [filteredClicks, setFilteredClicks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -103,7 +111,9 @@ const Clicks = () => {
   const activeFiltersCount = Object.values(filters).filter(v => v !== "").length;
 
   return (
+   
     <div style={{ position: "relative" }}>
+      
       {/* Header with Stats and Filter Button */}
       <div style={{
         display: "flex",

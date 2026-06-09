@@ -1,95 +1,197 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
+import { useNavigate, Link } from "react-router-dom";
 
-const GlobalLedger = ({ setActiveTab, setSelectedUserId }) => {
+const GlobalLedger = () => {
     const [logs, setLogs] = useState([]);
     const [search, setSearch] = useState("");
     const [view, setView] = useState("all");
+    const navigate = useNavigate();
 
     useEffect(() => {
         api.get('/admin/accounting/report').then(res => setLogs(res.data.logs));
     }, []);
 
     const filtered = logs.filter(l => {
-        const matchesSearch = l.note?.toLowerCase().includes(search.toLowerCase()) || 
-                             l.user_name?.toLowerCase().includes(search.toLowerCase());
-        const matchesView = view === "all" ? true : 
-                           view === "in" ? l.credit > 0 : l.debit > 0;
+        const matchesSearch =
+            l.note?.toLowerCase().includes(search.toLowerCase()) ||
+            l.user_name?.toLowerCase().includes(search.toLowerCase());
+
+        const matchesView =
+            view === "all"
+                ? true
+                : view === "in"
+                ? l.credit > 0
+                : l.debit > 0;
+
         return matchesSearch && matchesView;
     });
+    
+   
+    const downloadCSV = () => {
+        const headers = ["Date", "User/Store", "Amount", "Reason"];
+
+        const rows = filtered.map(l => [
+            new Date(l.created_at).toLocaleDateString(),
+            l.user_name || l.store_name || "System",
+            l.credit > 0 ? `+${l.credit}` : `-${l.debit}`,
+            l.note || ""
+        ]);
+
+        const csvContent =
+            [headers, ...rows]
+                .map(e => e.join(","))
+                .join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "ledger-report.csv";
+        a.click();
+    };
 
     return (
-        <div className="simple-acc-wrapper">
-            <style>{`
-                .simple-acc-wrapper { display: flex; padding: 20px; gap: 20px; background: #f9f9f9; min-height: 100vh; font-family: sans-serif; }
-                .sidebar { width: 260px; background: white; padding: 20px; border-radius: 12px; height: fit-content; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-                .content { flex: 1; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-                
-                .side-box { margin-bottom: 20px; }
-                .side-box label { display: block; font-size: 12px; font-weight: bold; color: #666; margin-bottom: 8px; text-transform: uppercase; }
-                .input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-                
-                .main-table { width: 100%; border-collapse: collapse; }
-                .main-table th { text-align: left; padding: 12px; font-size: 12px; color: #999; border-bottom: 1px solid #eee; }
-                .main-table td { padding: 15px; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
-                
-                .green { color: #27ae60; font-weight: bold; }
-                .red { color: #e74c3c; font-weight: bold; }
-                .user-link { color: #3498db; cursor: pointer; border: none; background: none; font-weight: bold; padding: 0; text-decoration: underline; }
-            `}</style>
+        <div style={{ padding: "20px", background: "#f4f6f9", minHeight: "100vh" }}>
+            
+            {/* HEADER */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
+                <button 
+                    onClick={() => navigate("/dashboard/cashbacks/accounting")}
+                    style={btnSecondary}
+                >
+                    ← Back
+                </button>
 
-            {/* SIDEBAR FILTERS */}
-            <aside className="sidebar">
-                <div className="side-box">
-                    <label>Search Records</label>
-                    <input type="text" className="input" placeholder="Name or Note..." onChange={(e)=>setSearch(e.target.value)} />
-                </div>
-                <div className="side-box">
-                    <label>View Mode</label>
-                    <select className="input" onChange={(e)=>setView(e.target.value)}>
-                        <option value="all">Show All</option>
-                        <option value="in">Money Coming In</option>
-                        <option value="out">Money Going Out</option>
-                    </select>
-                </div>
-                <hr style={{border: '0', borderTop: '1px solid #eee', margin: '20px 0'}} />
-                <button onClick={() => window.print()} className="input" style={{cursor:'pointer', background:'#eee'}}>Print Page</button>
-            </aside>
+                <button onClick={downloadCSV} style={btnPrimary}>
+                    Download CSV
+                </button>
+            </div>
 
-            {/* MAIN CONTENT */}
-            <main className="content">
-                <h2 style={{marginTop: 0}}>Activity Log</h2>
-                <table className="main-table">
+            {/* FILTER BAR */}
+            <div style={card}>
+                <input
+                    placeholder="Search user or note..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    style={input}
+                />
+
+                <select value={view} onChange={(e) => setView(e.target.value)} style={input}>
+                    <option value="all">All</option>
+                    <option value="in">Money In</option>
+                    <option value="out">Money Out</option>
+                </select>
+            </div>
+
+            {/* TABLE */}
+            <div style={card}>
+                <h3 style={{ marginBottom: "15px" }}>Activity Log</h3>
+
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Person/Store</th>
-                            <th>Amount</th>
-                            <th>Reason</th>
+                        <tr style={{ borderBottom: "1px solid #eee", color: "#666" }}>
+                            <th style={th}>Date</th>
+                            <th style={th}>User / Store</th>
+                            <th style={th}>Amount</th>
+                            <th style={th}>Reason</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {filtered.map(l => (
-                            <tr key={l.id}>
-                                <td>{new Date(l.created_at).toLocaleDateString()}</td>
-                                <td>
+                            <tr key={l.id} style={{ borderBottom: "1px solid #f2f2f2" }}>
+                                <td style={td}>
+                                    {new Date(l.created_at).toLocaleDateString()}
+                                </td>
+
+                                <td style={td}>
                                     {l.wp_user_id ? (
-                                        <button className="user-link" onClick={() => { setSelectedUserId(l.wp_user_id); setActiveTab('user-details'); }}>
+                                        <Link
+                                            to={`/dashboard/cashbacks/users/${l.wp_user_id}`}
+                                            style={linkStyle}
+                                        >
                                             {l.user_name || `User ${l.wp_user_id}`}
-                                        </button>
-                                    ) : (l.store_name || 'System')}
+                                        </Link>
+                                    ) : (
+                                        l.store_name || "System"
+                                    )}
                                 </td>
-                                <td className={l.credit > 0 ? 'green' : 'red'}>
-                                    {l.credit > 0 ? `+ ${l.credit}` : `- ${l.debit}`}
+
+                                <td style={{
+                                    ...td,
+                                    color: l.credit > 0 ? "#16a34a" : "#dc2626",
+                                    fontWeight: 600
+                                }}>
+                                    {l.credit > 0 ? `+ ₹${l.credit}` : `- ₹${l.debit}`}
                                 </td>
-                                <td style={{color: '#666', fontSize: '13px'}}>{l.note}</td>
+
+                                <td style={{ ...td, color: "#555" }}>
+                                    {l.note}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-            </main>
+            </div>
         </div>
     );
+};
+
+/* 🔥 STYLES */
+
+const card = {
+    background: "#fff",
+    padding: "20px",
+    borderRadius: "12px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+    marginBottom: "20px",
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+    flexWrap: "wrap"
+};
+
+const input = {
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ddd",
+    minWidth: "200px"
+};
+
+const th = {
+    textAlign: "left",
+    padding: "12px",
+    fontSize: "13px"
+};
+
+const td = {
+    padding: "14px",
+    fontSize: "14px"
+};
+
+const linkStyle = {
+    color: "#2563eb",
+    textDecoration: "none",
+    fontWeight: 500
+};
+
+const btnPrimary = {
+    background: "#2563eb",
+    color: "#fff",
+    border: "none",
+    padding: "10px 16px",
+    borderRadius: "6px",
+    cursor: "pointer"
+};
+
+const btnSecondary = {
+    background: "#e5e7eb",
+    border: "none",
+    padding: "10px 16px",
+    borderRadius: "6px",
+    cursor: "pointer"
 };
 
 export default GlobalLedger;

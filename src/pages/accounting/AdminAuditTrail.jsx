@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState  } from 'react';
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import api from '../../api/axios';
 
 const AdminAuditTrail = () => {
     const [audit, setAudit] = useState([]);
     const [selectedLog, setSelectedLog] = useState(null);
+     const navigate = useNavigate();
 
     useEffect(() => {
         api.get('/admin/accounting/report').then(res => {
@@ -36,6 +38,13 @@ const AdminAuditTrail = () => {
                 .close-drawer { background: none; border: 1px solid #ddd; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
             `}</style>
 
+
+ <button 
+            onClick={() => navigate("/dashboard/cashbacks/accounting")}
+            style={{ padding: "8px 16px", cursor: "pointer" }}
+        >
+            ← Back
+        </button>
             <h2>🛡️ Admin Activity History</h2>
             <p style={{color: '#777', marginBottom: '20px'}}>Click any record to view technical IDs and linking info.</p>
 
