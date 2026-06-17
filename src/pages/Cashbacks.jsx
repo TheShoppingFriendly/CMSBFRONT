@@ -1,64 +1,122 @@
-import { useNavigate, useLocation, Outlet } from "react-router-dom";
-
 const Cashbacks = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  // Helper to determine active tab based on URL
-  const activeTab = location.pathname.includes("accounting") 
-    ? "accounting" 
-    : location.pathname.includes("users") 
-      ? "users" 
-      : "cashback";
-
   return (
-    <div style={{ padding: "20px" }}>
-      {/* --- Top Navigation Bar --- */}
-    {/* Inside Cashbacks.jsx */}
-<div style={tabContainerStyle}>
-  <button 
-    onClick={() => navigate("/dashboard/cashbacks")} 
-    style={tabButtonStyle(activeTab === "cashback")}
-  >
-    💸 Cashback Management
-  </button>
-  <button 
-    onClick={() => navigate("/dashboard/cashbacks/users")} 
-    style={tabButtonStyle(activeTab === "users")}
-  >
-    👥 User Management
-  </button>
-  <button 
-    onClick={() => navigate("/dashboard/cashbacks/accounting")} 
-    style={tabButtonStyle(activeTab === "accounting")}
-  >
-    🏦 Accounting Module
-  </button>
-</div>
+    <div style={{
+      backgroundColor: "white",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+      padding: "60px 40px",
+      textAlign: "center",
+      minHeight: "500px",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center"
+    }}>
+      <div style={{
+        width: "120px",
+        height: "120px",
+        backgroundColor: "#fef3c7",
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "60px",
+        marginBottom: "32px",
+        animation: "pulse 2s infinite"
+      }}>
+        💸
+      </div>
+      
+      <h2 style={{
+        margin: "0 0 16px 0",
+        fontSize: "32px",
+        fontWeight: "700",
+        color: "#1f2937"
+      }}>
+        Cashbacks Coming Soon
+      </h2>
+      
+      <p style={{
+        margin: "0 0 24px 0",
+        fontSize: "16px",
+        color: "#6b7280",
+        maxWidth: "600px",
+        lineHeight: "1.6"
+      }}>
+        We're building an amazing cashback management system! Soon you'll be able to track cashback offers, 
+        manage payouts, and view detailed analytics all in one place.
+      </p>
 
-      {/* This is where the sub-pages (UserList, Accounting, etc.) will render */}
-      <Outlet />
+      <div style={{
+        display: "flex",
+        gap: "16px",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        marginTop: "32px"
+      }}>
+        <div style={{
+          padding: "16px 24px",
+          backgroundColor: "#f0fdf4",
+          border: "2px solid #86efac",
+          borderRadius: "8px",
+          fontSize: "14px",
+          fontWeight: "600",
+          color: "#166534"
+        }}>
+          ✓ Track Cashback Offers
+        </div>
+        <div style={{
+          padding: "16px 24px",
+          backgroundColor: "#f0fdf4",
+          border: "2px solid #86efac",
+          borderRadius: "8px",
+          fontSize: "14px",
+          fontWeight: "600",
+          color: "#166534"
+        }}>
+          ✓ Manage Payouts
+        </div>
+        <div style={{
+          padding: "16px 24px",
+          backgroundColor: "#f0fdf4",
+          border: "2px solid #86efac",
+          borderRadius: "8px",
+          fontSize: "14px",
+          fontWeight: "600",
+          color: "#166534"
+        }}>
+          ✓ Detailed Analytics
+        </div>
+      </div>
+
+      <div style={{
+        marginTop: "48px",
+        padding: "16px 32px",
+        backgroundColor: "#fef3c7",
+        color: "#92400e",
+        borderRadius: "10px",
+        fontSize: "15px",
+        fontWeight: "600",
+        display: "flex",
+        alignItems: "center",
+        gap: "12px"
+      }}>
+        <span style={{ fontSize: "24px" }}>🚧</span>
+        Under Development
+      </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+      `}</style>
     </div>
   );
 };
-
-const tabContainerStyle = { 
-  display: "flex", 
-  gap: "20px", 
-  marginBottom: "30px", 
-  borderBottom: "1px solid #e5e7eb", 
-  paddingBottom: "15px" 
-};
-
-const tabButtonStyle = (isActive) => ({
-  padding: "10px 20px",
-  borderRadius: "8px",
-  border: "none",
-  backgroundColor: isActive ? "#7c3aed" : "transparent",
-  color: isActive ? "white" : "#6b7280",
-  fontWeight: "600",
-  cursor: "pointer",
-  transition: "all 0.3s"
-});
 
 export default Cashbacks;

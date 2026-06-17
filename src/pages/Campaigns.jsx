@@ -6,59 +6,60 @@ const Campaigns = ({ activeTab }) => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [viewType, setViewType] = useState("list");
-
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 
   const navigate = useNavigate();
 
-useEffect(() => {
-  // Relax the guard clause
-  // If activeTab is undefined or different, we still want to see our stores
-  const fetchStores = async () => {
-    try {
-      setLoading(true);
-      setError(""); 
-      
-      const token = localStorage.getItem("admin_token");
-      if (!token) {
-        setError("Unauthorized. Please login again.");
+  useEffect(() => {
+    // Only fetch if the tab is "all-campaigns"
+    if (activeTab !== "all-campaigns") return;
+
+    const fetchStores = async () => {
+      try {
+        setLoading(true);
+        setError(""); // Reset error state on new fetch
+        
+        // Ensure you are using the correct key: "admin_token"
+        const token = localStorage.getItem("admin_token");
+
+        if (!token) {
+          setError("Unauthorized. Please login again.");
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/stores`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          if (res.status === 401) throw new Error("Session expired. Please login again.");
+          throw new Error("Failed to load stores from server.");
+        }
+
+        const data = await res.json();
+        
+        // FIX: Your backend sends result.rows directly (an array)
+        // We check if data is an array, otherwise we set an empty list
+        console.log("Fetched Stores:", data); 
+        setStores(Array.isArray(data) ? data : []);
+
+      } catch (err) {
+        console.error("Fetch Error:", err.message);
+        setError(err.message);
+      } finally {
         setLoading(false);
-        return;
       }
+    };
 
-      const res = await fetch(`${API_BASE}/stores`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        if (res.status === 401) throw new Error("Session expired.");
-        throw new Error("Failed to load stores.");
-      }
-
-      const data = await res.json();
-      
-      // Ensure we handle both { rows: [] } or just [] structures
-      const storesData = data.rows || data; 
-      setStores(Array.isArray(storesData) ? storesData : []);
-
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchStores();
-  // We remove activeTab from the guard but keep it in dependencies if you 
-  // want to refetch when switching tabs
-}, [API_BASE]);
+    fetchStores();
+  }, [activeTab, API_BASE]);
 
   // UI Helpers
   const getTitle = () => {
@@ -99,101 +100,61 @@ useEffect(() => {
       )}
 
       {/* --- Store Grid --- */}
-{!loading && !error && (
-  <>
-    {stores.length === 0 ? (
-      <p style={{ textAlign: "center", color: "#6b7280", marginTop: "40px" }}>
-        No stores found in the database.
-      </p>
-    ) : (
-      <>
-        {/* View Toggle */}
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px", gap: "10px" }}>
-            <button
-            onClick={() => setViewType("list")}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "6px",
-              border: viewType === "list" ? "2px solid #7c3aed" : "1px solid #e5e7eb",
-              background: "#fff",
-              cursor: "pointer",
-              fontWeight: 600
-            }}
-          >
-            List
-          </button>
-          <button
-            onClick={() => setViewType("grid")}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "6px",
-              border: viewType === "grid" ? "2px solid #7c3aed" : "1px solid #e5e7eb",
-              background: "#fff",
-              cursor: "pointer",
-              fontWeight: 600
-            }}
-          >
-            Grid
-          </button>
-        
-        </div>
+      {activeTab === "all-campaigns" && !loading && !error && (
+        <>
+          {stores.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#6b7280", marginTop: "40px" }}>
+              No stores found in the database.
+            </p>
+          ) : (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: "20px"
+            }}>
+              {stores.map((store) => (
+                <div
+                  key={store.id}
+                  style={{
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "12px",
+                    padding: "20px",
+                    backgroundColor: "#fff",
+                    transition: "transform 0.2s",
+                    cursor: "default"
+                  }}
+                >
+                  <h4 style={{ margin: 0, fontSize: "18px", fontWeight: 600, color: "#111827" }}>
+                    {store.name}
+                  </h4>
 
-        {/* Stores Wrapper */}
-        <div
-          style={
-            viewType === "grid"
-              ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "20px" }
-              : { display: "flex", flexDirection: "column", gap: "15px" }
-          }
-        >
-          {stores.map((store) => (
-            <div
-              key={store.id}
-              style={{
-                border: "1px solid #e5e7eb",
-                borderRadius: "12px",
-                padding: "20px",
-                backgroundColor: "#fff",
-                display: viewType === "list" ? "flex" : "block",
-                justifyContent: "space-between",
-                alignItems: viewType === "list" ? "center" : "initial"
-              }}
-            >
-              <div>
-                <h4 style={{ margin: 0, fontSize: "18px", fontWeight: 600, color: "#111827" }}>
-                  {store.name}
-                </h4>
-                <p style={{ fontSize: "14px", color: "#6b7280", marginTop: "8px" }}>
-                  Slug: <code style={{ backgroundColor: "#f3f4f6", padding: "2px 4px", borderRadius: "4px" }}>
-                    {store.slug}
-                  </code>
-                </p>
-              </div>
+                  <p style={{ fontSize: "14px", color: "#6b7280", marginTop: "8px", marginBottom: "16px" }}>
+                    Slug: <code style={{ backgroundColor: "#f3f4f6", padding: "2px 4px", borderRadius: "4px" }}>{store.slug}</code>
+                  </p>
 
-              <button
-                onClick={() => navigate(`/dashboard/campaigns/${store.slug}`)} // UPDATED PATH
-                style={{
-                  padding: "10px 20px",
-                  marginTop: viewType === "grid" ? "16px" : "0",
-                  width: viewType === "grid" ? "100%" : "auto",
-                  borderRadius: "8px",
-                  border: "none",
-                  backgroundColor: "#7c3aed",
-                  color: "#fff",
-                  fontWeight: 600,
-                  cursor: "pointer"
-                }}
-              >
-                View Campaign
-              </button>
+                  <button
+  onClick={() => navigate(`/campaigns/${store.slug}`)}
+  style={{
+    width: "100%",
+    padding: "10px",
+    borderRadius: "8px",
+    border: "none",
+    backgroundColor: "#7c3aed",
+    color: "#fff",
+    fontWeight: 600,
+    cursor: "pointer",
+    fontSize: "14px"
+  }}
+>
+  View Campaign
+</button>
+
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </>
-    )}
-  </>
-)}
-
+          )}
+        </>
+      )}
     </div>
   );
 };

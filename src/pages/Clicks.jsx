@@ -1,15 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import Sidebar from "../components/layout/Sidebar";
 
 const Clicks = () => {
-
-  const [clicksCount, setClicksCount] = useState(0);
-  const [conversionsCount, setConversionsCount] = useState(0);
-  // const [clicks, setClicks] = useState([]);
-  // const [conversions, setConversions] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  
   const [clicks, setClicks] = useState([]);
   const [filteredClicks, setFilteredClicks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,9 +103,7 @@ const Clicks = () => {
   const activeFiltersCount = Object.values(filters).filter(v => v !== "").length;
 
   return (
-   
     <div style={{ position: "relative" }}>
-      
       {/* Header with Stats and Filter Button */}
       <div style={{
         display: "flex",
@@ -294,7 +284,7 @@ const Clicks = () => {
                   fontWeight: "600",
                   color: "#2c3e50"
                 }}>
-                  Campaign Name
+                  Campaign ID
                 </label>
                 <input
                   type="text"
@@ -515,21 +505,19 @@ const Clicks = () => {
             width: "100%",
             borderCollapse: "collapse"
           }}>
-          <thead>
-  <tr style={{ backgroundColor: "#f8f9fa" }}>
-    <th style={tableHeaderStyle}>Serial No.</th>
-    <th style={tableHeaderStyle}>Click ID</th>
-    <th style={tableHeaderStyle}>Campaign Name(ID)</th>
-    <th style={tableHeaderStyle}>Referrer URL</th>
-    <th style={tableHeaderStyle}>Country</th>
-    <th style={tableHeaderStyle}>City</th>
-    <th style={tableHeaderStyle}>IP Address</th>
-    <th style={tableHeaderStyle}>User Agent</th>
-    <th style={tableHeaderStyle}>Tracking Type</th>
-    <th style={tableHeaderStyle}>Created At</th>
-  </tr>
-</thead>
-
+            <thead>
+              <tr style={{ backgroundColor: "#f8f9fa" }}>
+                <th style={tableHeaderStyle}>Serial No.</th>
+                <th style={tableHeaderStyle}>Click ID</th>
+                <th style={tableHeaderStyle}>Campaign ID</th>
+                <th style={tableHeaderStyle}>Coupon URL</th>
+                <th style={tableHeaderStyle}>Final Redirect</th>
+                <th style={tableHeaderStyle}>IP Address</th>
+                <th style={tableHeaderStyle}>User Agent</th>
+                <th style={tableHeaderStyle}>Tracking Type</th>
+                <th style={tableHeaderStyle}>Created At</th>
+              </tr>
+            </thead>
             <tbody>
               {filteredClicks.map((click, index) => (
                 <tr 
@@ -553,45 +541,11 @@ const Clicks = () => {
                       {click.clickid || "N/A"}
                     </code>
                   </td>
-                  {/* <td style={tableCellStyle}>
+                  <td style={tableCellStyle}>
                     {click.campaign_id || 
                       <span style={{ color: "#6c757d" }}>null</span>}
-                  </td> */}
-
+                  </td>
                   <td style={tableCellStyle}>
-  {click.store_display || click.campaign_id || <span style={{ color: "#6c757d" }}>null</span> }
-</td>
-<td style={tableCellStyle}>
-  {click.referrer ? (
-    <a
-      href={click.referrer}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        color: "#3498db",
-        textDecoration: "none",
-        fontSize: "13px"
-      }}
-      title={click.referrer}
-      onMouseEnter={(e) => e.target.style.textDecoration = "underline"}
-      onMouseLeave={(e) => e.target.style.textDecoration = "none"}
-    >
-      {click.referrer.length > 40
-        ? click.referrer.substring(0, 40) + "..."
-        : click.referrer}
-    </a>
-  ) : "Direct / None"}
-</td>
-
-<td style={tableCellStyle}>
-  {click.country || "N/A"}
-</td>
-
-<td style={tableCellStyle}>
-  {click.city || "N/A"}
-</td>
-
-                  {/* <td style={tableCellStyle}>
                     {click.coupon_url ? (
                       <a 
                         href={click.coupon_url} 
@@ -631,7 +585,7 @@ onMouseLeave={(e) => e.target.style.textDecoration = "none"}
 : click.final_redirect_url}
 </a>
 ) : "N/A"}
-</td> */}
+</td>
 <td style={tableCellStyle}>
 <span style={{
 fontFamily: "monospace",

@@ -1,32 +1,40 @@
 import { useState, useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
+import Clicks from "./Clicks";
+import Conversions from "./Conversions";
+import Campaigns from "./Campaigns";
+import Cashbacks from "./Cashbacks";
+import UserStaff from "./UserStaff";
+import AdminProfile from "./AdminProfile";
 import api from "../api/axios";
+import UserDetails from "./UserDetails";
+import Users from "./Users";
+import FinancialOverview from './accounting/FinancialOverview';
+import GlobalLedger from './accounting/GlobalLedger';
+import RevenueAnalysis from './accounting/RevenueAnalysis';
+import AdminAuditTrail from './accounting/AdminAuditTrail';
 
 const Dashboard = () => {
-  const location = useLocation();
-
+  const [activeTab, setActiveTab] = useState("home");
   const [clicksCount, setClicksCount] = useState(0);
   const [conversionsCount, setConversionsCount] = useState(0);
   const [clicks, setClicks] = useState([]);
   const [conversions, setConversions] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [activeTab, setActiveTab] = useState("users-list");
   const [selectedUserId, setSelectedUserId] = useState(null);
 
   useEffect(() => {
-    if (location.pathname === "/dashboard") {
+    if (activeTab === "home") {
       fetchDashboardData();
     }
-  }, [location.pathname]);
+  }, [activeTab]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       const [clicksRes, conversionsRes] = await Promise.all([
         api.get("/admin/clicks"),
-        api.get("/admin/conversions"),
+        api.get("/admin/conversions")
       ]);
       setClicks(clicksRes.data);
       setConversions(conversionsRes.data);
@@ -39,102 +47,15 @@ const Dashboard = () => {
     }
   };
 
-  const conversionRate =
-    clicksCount > 0
-      ? ((conversionsCount / clicksCount) * 100).toFixed(2)
-      : 0;
+  const conversionRate = clicksCount > 0 
+    ? ((conversionsCount / clicksCount) * 100).toFixed(2) 
+    : 0;
 
   const recentClicks = clicks.slice(0, 5);
   const recentConversions = conversions.slice(0, 5);
 
-  const isHome = location.pathname === "/dashboard";
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        backgroundColor: "#f5f7fa",
-        overflowX: "hidden",
-      }}
-    >
-      <Sidebar
-        clicksCount={clicksCount}
-        conversionsCount={conversionsCount}
-      />
-
-      <main
-        className="main-content"
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-          overflowY: "visible",
-          width: "75%",
-          marginLeft:"240px"
-        }}
-      >
-        <header
-          style={{
-            backgroundColor: "white",
-            padding: "20px 32px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            position: "sticky",
-            top: 0,
-            zIndex: 100,
-            borderBottom: "1px solid #e5e7eb",
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "26px",
-              color: "#1f2937",
-              fontWeight: "700",
-            }}
-          >
-            {getPageTitle(location.pathname)}
-          </h1>
-        </header>
-
-        <div
-          style={{
-            padding: "32px",
-            flex: 1,
-            width: "100%",
-            boxSizing: "border-box",
-          }}
-        >
-          {isHome ? (
-            <HomePage
-              loading={loading}
-              clicksCount={clicksCount}
-              conversionsCount={conversionsCount}
-              conversionRate={conversionRate}
-              recentClicks={recentClicks}
-              recentConversions={recentConversions}
-            />
-          ) : (
-            <Outlet context={{ activeTab, setActiveTab, selectedUserId, setSelectedUserId }} />
-          )}
-        </div>
-      </main>
-    </div>
-  );
-};
-
-
-const HomePage = ({
-  loading,
-  clicksCount,
-  conversionsCount,
-  conversionRate,
-  recentClicks,
-  recentConversions,
-}) => {
-  return (
-   <div>
+  const renderHomePage = () => (
+    <div>
       {/* Stats Cards */}
       <div style={{
         display: "grid",
@@ -237,33 +158,112 @@ const HomePage = ({
       </div>
     </div>
   );
-};
 
-const getPageTitle = (pathname) => {
-  const routes = {
-    "/dashboard": "Dashboard Overview",
-    "/dashboard/clicks": "Clicks Management",
-    "/dashboard/conversions": "Conversions Management",
-    "/dashboard/campaigns": "Campaigns",
-    "/dashboard/cashbacks": "Cashbacks",
-    "/dashboard/users": "Users Management",
-    "/dashboard/finance-dashboard": "Financial Overview",
-    "/dashboard/global-ledger": "Global Ledger",
-    "/dashboard/revenue-analysis": "Revenue Streams",
-    "/dashboard/audit-logs": "Admin Audit Trail",
+  const renderPage = () => {
+    switch (activeTab) {
+      case "home": return renderHomePage();
+      case "clicks": return <Clicks setCount={setClicksCount} />;
+      case "conversions": return <Conversions setCount={setConversionsCount} />;
+      case "campaigns": case "add-campaign": case "all-campaigns": return <Campaigns activeTab={activeTab} />;
+      case "cashbacks": return <Cashbacks />;
+      case "users-staff": return <UserStaff />;
+      case "admin-profile": return <AdminProfile />;
+      case "users-list": return <Users setActiveTab={setActiveTab} setSelectedUserId={setSelectedUserId} />;
+      case "user-details": return <UserDetails wp_user_id={selectedUserId} setActiveTab={setActiveTab} />; 
+      case "finance-dashboard": return <FinancialOverview />;
+      case "global-ledger": return <GlobalLedger />;
+      case "revenue-analysis": return <RevenueAnalysis />;
+      case "audit-logs": return <AdminAuditTrail />;
+      default: return renderHomePage();
+    }
   };
 
-  // Handle dynamic routes
-  if (pathname.startsWith("/dashboard/users/")) {
-    return "User Details";
-  }
+ return (
+  <div style={{ 
+    display: "flex", 
+    minHeight: "100vh", 
+    backgroundColor: "#f5f7fa",
+    overflowX: "hidden" // Prevent horizontal scroll issues
+  }}>
+    <Sidebar 
+      activeTab={activeTab} 
+      setActiveTab={setActiveTab}
+      clicksCount={clicksCount}
+      conversionsCount={conversionsCount}
+    />
 
-  if (pathname.startsWith("/dashboard/campaigns/")) {
-    return "Campaign Details";
-  }
+    <main 
+      className="main-content" 
+      style={{ 
+        flex: 1, 
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh", 
+        transition: "margin-left 0.3s ease",
+        // Ensure the main area doesn't trap the scroll
+        overflowY: "visible" ,
+        width:"75%"
+      }}
+    >
+      <header style={{
+        backgroundColor: "white", 
+        padding: "20px 32px", 
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        position: "sticky", 
+        top: 0, 
+        zIndex: 100, 
+        borderBottom: "1px solid #e5e7eb"
+      }}>
+        <h1 style={{ margin: 0, fontSize: "26px", color: "#1f2937", fontWeight: "700" }}>
+          {getPageTitle(activeTab)}
+        </h1>
+      </header>
 
-  return routes[pathname] || "Dashboard";
+      {/* This inner div ensures padding doesn't break the layout */}
+      <div style={{ 
+        padding: "32px", 
+        flex: 1,
+        width: "100%",
+        boxSizing: "border-box" 
+      }}>
+        {renderPage()}
+      </div>
+    </main>
+
+    <style>{`
+      @media (min-width: 768px) {
+        .main-content { margin-left: 240px !important; }
+      }
+      @media (max-width: 767px) {
+        .main-content { margin-left: 0 !important; }
+      }
+      /* Ensure the body itself allows scrolling */
+      body {
+        margin: 0;
+        overflow-y: auto;
+      }
+    `}</style>
+  </div>
+);
 };
 
+const getPageTitle = (tab) => {
+  const titles = {
+    home: "Dashboard Overview",
+    clicks: "Clicks Management",
+    conversions: "Conversions Management",
+    campaigns: "Campaigns",
+    "add-campaign": "Add New Campaign",
+    "all-campaigns": "All Campaigns",
+    cashbacks: "Cashbacks",
+    "users-staff": "Users & Staff Management",
+    "admin-profile": "Admin Profile",
+    "finance-dashboard": "Financial Overview",
+    "global-ledger": "Global Ledger",
+    "revenue-analysis": "Revenue Streams",
+    "audit-logs": "Admin Audit Trail"
+  };
+  return titles[tab] || "Dashboard";
+};
 
 export default Dashboard;

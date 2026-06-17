@@ -1,31 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
-import { useNavigate } from "react-router-dom";
 
 const RevenueAnalysis = () => {
     const [revData, setRevData] = useState([]);
-         const navigate = useNavigate();
 
     useEffect(() => {
         api.get('/admin/accounting/report?type=INCOMING_REVENUE').then(res => setRevData(res.data.logs));
     }, []);
 
     return (
-        <>
-        
- <button 
-            onClick={() => navigate("/dashboard/cashbacks/accounting")}
-            style={{ padding: "8px 16px", cursor: "pointer" }}
-        >
-            ← Back
-        </button>
-        
         <div className="ra-container">
             <style>{`
                 .ra-container { padding: 30px; }
                 .ra-split { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
                 .ra-table-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 20px; }
-                .ra-info-card { background: #111827; color: white; border-radius: 12px; padding: 30px; display: flex; flex-direction: column; }
+                .ra-info-card { background: #111827; color: white; border-radius: 12px; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
                 .ra-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #f3f4f6; }
                 .ra-store-name { font-weight: 700; color: #374151; }
                 .ra-amount { color: #059669; font-weight: 700; }
@@ -53,7 +42,6 @@ const RevenueAnalysis = () => {
                 </div>
             </div>
         </div>
-        </>
     );
 };
 
