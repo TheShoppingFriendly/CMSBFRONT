@@ -193,7 +193,7 @@ const Conversions = ({ setCount }) => {
           )}
         </button>
       </div>
-
+      
       {/* Filter Sidebar */}
       {filterOpen && (
         <div style={{
@@ -504,13 +504,18 @@ const Conversions = ({ setCount }) => {
               <tr style={{ backgroundColor: "#f8f9fa" }}>
                 <th style={tableHeaderStyle}>#</th>
                 <th style={tableHeaderStyle}>Click ID</th>
-                <th style={tableHeaderStyle}>Commission</th>
+                <th style={tableHeaderStyle}>Revenue</th>
                 <th style={tableHeaderStyle}>Total Sale</th>
                 <th style={tableHeaderStyle}>Status</th>
-                <th style={tableHeaderStyle}>Postback Payload</th>
-                <th style={tableHeaderStyle}>Order ID</th>
-                <th style={tableHeaderStyle}>Source</th>
+                <th style={tableHeaderStyle}>Trxn ID</th>
+                <th style={tableHeaderStyle}>Tracking Type</th>
                 <th style={tableHeaderStyle}>Created At</th>
+                   <th style={tableHeaderStyle}>Referrer</th>
+<th style={tableHeaderStyle}>City</th>
+<th style={tableHeaderStyle}>Country</th>
+<th style={tableHeaderStyle}>User Agent</th>
+                   <th style={tableHeaderStyle}>Postback Payload</th>
+
               </tr>
             </thead>
             <tbody>
@@ -572,23 +577,7 @@ const Conversions = ({ setCount }) => {
                       {conversion.status || "N/A"}
                     </span>
                   </td>
-                  <td style={tableCellStyle}>
-                    <code style={{ 
-                      fontSize: "11px",
-                      backgroundColor: "#f8f9fa",
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      display: "block",
-                      maxWidth: "300px",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap"
-                    }}
-                    title={conversion.postback_payload}
-                    >
-                      {conversion.postback_payload || "N/A"}
-                    </code>
-                  </td>
+              
                   <td style={tableCellStyle}>
                     {conversion.order_id || 
                       <span style={{ color: "#6c757d" }}>null</span>}
@@ -618,6 +607,45 @@ const Conversions = ({ setCount }) => {
                         "N/A"}
                     </span>
                   </td>
+                
+                  <td style={tableCellStyle}>
+  {conversion.referrer || "Direct / None"}
+</td>
+
+<td style={tableCellStyle}>
+  {conversion.city || "N/A"}
+</td>
+
+<td style={tableCellStyle}>
+  {conversion.country || "N/A"}
+</td>
+
+<td style={tableCellStyle} title={conversion.user_agent}>
+  <span style={{ fontSize: "12px", color: "#6c757d" }}>
+    {conversion.user_agent
+      ? conversion.user_agent.substring(0, 40) + "..."
+      : "N/A"}
+  </span>
+</td>
+
+      <td style={tableCellStyle}>
+                    <code style={{ 
+                      fontSize: "11px",
+                      backgroundColor: "#f8f9fa",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      display: "block",
+                      maxWidth: "300px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
+                    }}
+                    title={conversion.postback_payload}
+                    >
+                      {conversion.postback_payload || "N/A"}
+                    </code>
+                  </td>
+
                 </tr>
               ))}
             </tbody>

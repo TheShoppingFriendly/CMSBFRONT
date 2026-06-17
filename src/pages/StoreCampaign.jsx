@@ -180,13 +180,8 @@ const StoreCampaign = () => {
                 <tr style={{ background: "#f3f4f6" }}>
                   <th style={th}>Click ID (TGB Source)</th>
                   <th style={th}>Sale Amount</th>
-<<<<<<< HEAD
                   <th style={th}>Revenue</th>
                   <th style={th}>Status (Trackier, etc)</th>
-=======
-                  <th style={th}>Commission</th>
-                  <th style={th}>Status</th>
->>>>>>> parent of f9d8284 (UI and table update)
                   <th style={th}>Date</th>
                 </tr>
               </thead>
