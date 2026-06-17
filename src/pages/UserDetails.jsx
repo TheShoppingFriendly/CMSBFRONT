@@ -96,6 +96,7 @@ const UserDetails = () => {
             </thead>
 
             <tbody>
+<<<<<<< HEAD
               {(data.ledger || []).length > 0 ? (
                 (data.ledger || []).map((log, i) => {
                   const amount = Number(log?.amount_changed || 0);
@@ -171,6 +172,31 @@ const UserDetails = () => {
                     </tr>
                   );
                 })
+=======
+              {userData.logs?.length > 0 ? (
+                userData.logs.map((log, i) => (
+                  <tr key={i} style={trStyle}>
+                    <td style={tdStyle}>{new Date(log.created_at).toLocaleDateString()}</td>
+                    <td style={{ ...tdStyle, color: log.amount_changed >= 0 ? "#16a34a" : "#e11d48", fontWeight: "bold" }}>
+                        {log.amount_changed >= 0 ? `+${log.amount_changed}` : `-${Math.abs(log.amount_changed)}`}
+                    </td>
+                    <td style={{ ...tdStyle }}>${log.new_balance}</td>
+                    <td style={{ ...tdStyle, fontSize: "12px" }}>{log.reason}</td>
+                    <td style={tdStyle}>
+                        {log.status !== 'reverted' ? (
+                             <button 
+                                onClick={() => handleRevertTransaction(log.id)}
+                                style={revertBtnStyle}
+                             >
+                                Revert
+                             </button>
+                        ) : (
+                            <span style={{color: "#9ca3af", fontSize: "12px", fontStyle: "italic"}}>Reverted</span>
+                        )}
+                    </td>
+                  </tr>
+                ))
+>>>>>>> parent of f9d8284 (UI and table update)
               ) : (
                 <tr>
                   <td colSpan="8" style={{ padding: "30px", textAlign: "center" }}>
